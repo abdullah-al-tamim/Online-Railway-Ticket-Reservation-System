@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>ইস্টিশন</title>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,700">
+    <link rel="stylesheet" href="assets/fonts/ionicons.min.css">
+    <link rel="stylesheet" href="assets/css/Contact-Form-Clean.css">
+    <link rel="stylesheet" href="assets/css/Features-Boxed.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/css/pikaday.min.css">
+    <link rel="stylesheet" href="assets/css/Login-Form-Dark.css">
+    <link rel="stylesheet" href="assets/css/animation1.css">
+    <link href="https://cdn.rawgit.com/michalsnik/aos/2.1.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.rawgit.com/michalsnik/aos/2.1.1/dist/aos.js"></script>
+    <script>
+    AOS.init();
+    </script>
+</head>
+
+<body style="height: 940px;font-family: Lato, sans-serif">
+        {% if request.GET.date %}
+        <div class="contact-clean" style="background: url(&quot;assets/img/train6.jpg&quot;);height:940px;padding-top: 0px;">
+        <label id="LOADING" data-aos="fade-down" data-aos-delay="0" data-aos-duration="300" style="margin-top: 77px;margin-left: 1069px;margin-bottom: 38px; width: 450px;height: 35px;background: #cf2222;text-align: left;padding-left: 10px;padding-top:5px;color: white"><strong>Expiration date must be after today.</strong></label>
+    {% else %}
+    <div class="contact-clean" style="background: url(&quot;assets/img/train6.jpg&quot;);height:940px;padding-top: 150px;">
+            {% endif %}
+        <form method="post" style="height: 540px;border-top-color: rgb(206,212,218);"><img src="assets/img/2.png"><img src="assets/img/1.png"><img src="assets/img/4.png">
+            {%  csrf_token %}
+            <h2 class="text-center"></h2>
+            <div style="margin-bottom: 0px" class="form-group"><label>Card Number</label><input class="form-control" type="text" pattern="\d*" title="Must contain numercial digits only" maxlength="16" minlength="15" name="cardnumber" required><label>Name on Card</label><input class="form-control" type="text" name="name" required ></div>
+            <label style="margin-top: 0px">Expiration Date</label><label style="margin-left: 95px">CVV</label><input
+                class="form-control float-right" type="text" pattern="\d*" title="Must contain 3 numercial digits" required name ="cvv" maxlength="3" minlength="3" style="width: 198px;">
+                <div class="form-group"><input class="form-control" type="date" required name="date" style="width: 198px;"></div><label style="width: 400px;">Amount: {{ amount }} BDT</label>
+                <div class="form-group" style="height: 25px;">
+                    <div class="form-check"><input class="form-check-input" required name="check2" type="checkbox" id="formCheck-2"><label class="form-check-label" for="formCheck-2">I agree to the terms and conditions of service</label></div>
+                </div><button class="btn btn-primary" type="submit" style="text-transform:capitalize;width: 400px;font-size: 16px;filter: brightness(102%);background: linear-gradient(rgb(88,162,91),rgb(88,162,91),rgb(88,162,91));filter: brightness(102%);border-radius: 5px;">Proceed to pay</button></form>
+    </div>
+    <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-white portfolio-navbar gradient" style="color: rgb(118,35,35);padding: 18.2px 0px;background: linear-gradient(47deg, rgb(240,255,234), rgb(240,255,234) 99%);">
+            <div class="container">
+                <strong><img src="assets/img/testlogo.png" style="cursor:context-menu;width: 120px;height: 70px;margin-top: -20px;margin-bottom: -13px"></strong>
+                <div class="collapse navbar-collapse" id="navbarNav" style="text-align: right;">
+                <ul class="nav navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link active link link-four pulse-grow-on-hover" href="http://127.0.0.1:8000/" style="color: #070606;background-color: #f5fff1;padding: 0px;">Home</a></li>
+                    <li class="nav-item" style="color: #070606;"><a class="nav-link active link link-four pulse-grow-on-hover" href="login" style="color: #070606;background-color: #f5fff1;padding: 0px;">Log in</a></li>
+                    <li class="nav-item"><a class="nav-link active link link-four pulse-grow-on-hover" href="registration" style="color: #070606;background-color: #f5fff1;padding: 0px;">Register</a></li>
+                    <li class="nav-item"><a class="nav-link active link link-four pulse-grow-on-hover" href="updateinfo" style="color: #070606;background-color: #f5fff1;padding: 0px;">Dashboard</a></li>
+                    <li class="nav-item" style="color: #070606;"><a class="nav-link active link link-four pulse-grow-on-hover" href="contactus" style="color: #070606;background-color: #f5fff1;padding: 0px;">Contact us</a></li>
+                    <li class="nav-item" style="cursor:pointer;padding-right: 0px;"><a class="nav-link active link link-four pulse-grow-on-hover" onclick="logout()" style="color: #070606;background-color: #f5fff1;padding: 0px;">Log out</a></li>
+                </ul>
+        </div>
+            </div>
+        </nav>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/pikaday.min.js"></script>
+    <script src="assets/js/theme.js"></script>
+        <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+          <script>
+            AOS.init(
+                {
+                    offset: 200, // offset (in px) from the original trigger point
+                    once: true,
+                    mirror:true,
+                    duration: 1500, // values from 0 to 3000, with step 50ms
+                }
+            );
+          </script>
+</body>
+<script>
+    setTimeout(function(){
+        document.getElementById('LOADING').style.visibility = "hidden";
+    }, 4000);
+    </script>
+<script>
+function logout() {
+            window.location.href = "{% url 'login' %}" +"?logged_out="+"1";
+          }
+
+
+</script>
+</html>

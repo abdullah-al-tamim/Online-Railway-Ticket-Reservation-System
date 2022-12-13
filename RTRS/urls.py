@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from rtrsApp import views as mainViews
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', mainViews.homepage, name='home_page'),
 ]

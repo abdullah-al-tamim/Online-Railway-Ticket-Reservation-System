@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>ইস্টিশন</title>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,700">
+    <link rel="stylesheet" href="assets/fonts/ionicons.min.css">
+    <link rel="stylesheet" href="assets/css/Contact-Form-Clean.css">
+    <link rel="stylesheet" href="assets/css/animation1.css">
+    <link rel="stylesheet" href="assets/css/Features-Boxed.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/css/pikaday.min.css">
+    <link rel="stylesheet" href="assets/css/Login-Form-Dark.css">
+    <link rel="stylesheet" href="assets/css/animation1.css">
+    <link href="https://cdn.rawgit.com/michalsnik/aos/2.1.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.rawgit.com/michalsnik/aos/2.1.1/dist/aos.js"></script>
+    <script>
+    AOS.init();
+    </script>
+</head>
+
+<body style="height: 940px;font-family: Lato, sans-serif;">
+    <div class="contact-clean" style="background: url(&quot;assets/img/train6.jpg&quot;);padding-top: 150px;height:940px;text-align: center;">
+        <form method="post" style="border-top-color: rgb(206,212,218);padding-top: 50px;padding-bottom: 100px;padding-right: 20px;padding-left: 20px;">
+            <p style="font-size: 20px;">Total Amount : {{ amount }} BDT</p>
+            <h1 style="font-size: 36px;padding-bottom: 20px;padding-top: 10px;"><strong>Select Payment Method</strong></h1>
+            <div class="table-responsive table-borderless text-center">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td style="text-align: center;width: 205px;"><button class="btn btn-primary link link-four pulse-grow-on-hover" id="1" onclick="redirecting(id)"  data-bs-hover-animate="pulse" type="button" style="width: 170px;text-align: center;background: linear-gradient(rgb(255,255,255), white), rgba(255,255,255,0);"><img src="assets/img/1.png" style="width: 50px;"><img src="assets/img/2.png" style="width: 50px;"><img src="assets/img/4.png" style="width: 50px;"></button></td>
+                            <td
+                                style="text-align: center;width: 205px;"><button class="btn btn-primary link link-four pulse-grow-on-hover" id="2" onclick="redirecting(id)" type="button" style="background: linear-gradient(rgb(255,255,255), white), rgba(255,255,255,0);width: 170px;"><img data-bs-hover-animate="pulse" src="assets/img/nexus.png"></button></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;width: 205px;"><button class="btn btn-primary link link-four pulse-grow-on-hover" id="3" onclick="redirecting(id)" type="button" style="width: 170px;background: linear-gradient(rgb(255,255,255), white);"><img data-bs-hover-animate="pulse" src="assets/img/bkash.png"></button></td>
+                            <td class="text-center" style="text-align: center;width: 205px;">&nbsp;<button class="btn btn-primary link link-four pulse-grow-on-hover" id="4" onclick="redirecting(id)" type="button" style="width: 170px;background: linear-gradient(rgb(255,255,255), white);"><img data-bs-hover-animate="pulse" src="assets/img/rocket.png"></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+    <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-white portfolio-navbar gradient" style="color: rgb(118,35,35);padding: 18.2px 0px;background: linear-gradient(47deg, rgb(240,255,234), rgb(240,255,234) 99%);">
+            <div class="container">
+                <strong><img src="assets/img/testlogo.png" style="cursor:context-menu;width: 120px;height: 70px;margin-top: -20px;margin-bottom: -13px"></strong>
+                <div class="collapse navbar-collapse" id="navbarNav" style="text-align: right;">
+                <ul class="nav navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link active link link-four pulse-grow-on-hover" href="http://127.0.0.1:8000/" style="color: #070606;background-color: #f5fff1;padding: 0px;">Home</a></li>
+                    <li class="nav-item" style="color: #070606;"><a class="nav-link active link link-four pulse-grow-on-hover" href="login" style="color: #070606;background-color: #f5fff1;padding: 0px;">Log in</a></li>
+                    <li class="nav-item"><a class="nav-link active link link-four pulse-grow-on-hover" href="registration" style="color: #070606;background-color: #f5fff1;padding: 0px;">Register</a></li>
+                    <li class="nav-item"><a class="nav-link active link link-four pulse-grow-on-hover" href="updateinfo" style="color: #070606;background-color: #f5fff1;padding: 0px;">Dashboard</a></li>
+                    <li class="nav-item" style="color: #070606;"><a class="nav-link active link link-four pulse-grow-on-hover" href="contactus" style="color: #070606;background-color: #f5fff1;padding: 0px;">Contact us</a></li>
+                    <li class="nav-item" style="cursor:pointer;padding-right: 0px;"><a class="nav-link active link link-four pulse-grow-on-hover" onclick="logout()" style="color: #070606;background-color: #f5fff1;padding: 0px;">Log out</a></li>
+                </ul>
+        </div>
+            </div>
+        </nav>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/bs-init.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/pikaday.min.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+          <script>
+            AOS.init(
+                {
+                    offset: 200, // offset (in px) from the original trigger point
+                    once: true,
+                    mirror:true,
+                    duration: 1500, // values from 0 to 3000, with step 50ms
+                }
+            );
+          </script>
+</body>
+<script>
+
+    function redirecting(ID) {
+            var txt = document.getElementById(ID).id;
+            if(txt=="1")
+            window.location.href = "{% url 'card_payment' %}" +"?id="+txt;
+            else if(txt=="2")
+            window.location.href = "{% url 'nexus_payment' %}" +"?id="+txt;
+            else if(txt=="3")
+            window.location.href = "{% url 'bkash_payment' %}" +"?id="+txt;
+            else if(txt=="4")
+            window.location.href = "{% url 'rocket_payment' %}" +"?id="+txt;
+          }
+
+</script>
+<script>
+function logout() {
+            window.location.href = "{% url 'login' %}" +"?logged_out="+"1";
+          }
+
+</script>
+
+</html>

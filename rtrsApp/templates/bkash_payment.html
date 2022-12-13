@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>ইস্টিশন</title>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,700">
+    <link rel="stylesheet" href="assets/fonts/ionicons.min.css">
+    <link rel="stylesheet" href="assets/css/Contact-Form-Clean.css">
+    <link rel="stylesheet" href="assets/css/Features-Boxed.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/css/pikaday.min.css">
+    <link rel="stylesheet" href="assets/css/Login-Form-Dark.css">
+    <link rel="stylesheet" href="assets/css/animation1.css">
+    <link href="https://cdn.rawgit.com/michalsnik/aos/2.1.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.rawgit.com/michalsnik/aos/2.1.1/dist/aos.js"></script>
+    <script>
+    AOS.init();
+    </script>
+</head>
+
+<body style="height: 940px;font-family: Lato, sans-serif">
+{% if status %}
+    <div class="contact-clean" style="background: url(&quot;assets/img/train6.jpg&quot;);height: 940px;padding-top: 0px;">
+
+        <label id="LOADING" data-aos="fade-down" data-aos-delay="0" data-aos-duration="300" style="margin-top: 77px;margin-left: 1069px;margin-bottom: 38px; width: 450px;height: 35px;background: #cf2222;text-align: left;padding-left: 10px;padding-top:5px;color: white"><strong>{{ status }}</strong></label>
+    {% else %}
+    <div class="contact-clean" style="background: url(&quot;assets/img/train6.jpg&quot;);height:940px;padding-top: 150px;">
+    {% endif %}
+        <form action="" method="post" style="border-top-color: rgb(206,212,218);padding-top: 40px;">
+            {%  csrf_token %}
+            <h2 class="text-center"><img src="assets/img/bkash.png" style="width: 100px;height: 100px;"></h2>
+            <div class="form-group"><label>Mobile Account</label><input class="form-control" type="text" pattern="\d*" title="Input can be only numbers" name="name" maxlength="11" minlength="11" required ></div>
+
+            <div class="form-group"><label>PIN</label><input class="form-control" type="password" name="password" pattern="\d*" title="Input can be only numbers" maxlength="4" minlength="4" required ></div>
+
+            <div class="form-group">
+                {% if amount %}
+                <label style="width: 400px;margin-top: 10px;margin-bottom: 12px;">Amount: {{ amount }}</label>
+                {% else %}
+                <label style="width: 400px;margin-top: 10px;margin-bottom: 12px;">Amount:</label>
+                {% endif %}
+                <label style="width: 400px;">Currency: BDT</label></div>
+            <button class="btn btn-primary" name="btn1" id= "btn1" type="submit" style="width: 400px;font-size: 16px;background:linear-gradient(rgb(88,162,91),rgb(88,162,91),rgb(88,162,91));filter: brightness(102%);text-transform: capitalize;border-radius: 5px;">Send verification code</button>
+            <button class="btn btn-primary" name="btn2" type="button" data-toggle="modal" data-target="#exampleModalCenter" style="width: 400px;font-size: 16px;background:linear-gradient(rgb(88,162,91),rgb(88,162,91),rgb(88,162,91));filter: brightness(102%);text-transform: capitalize;border-radius: 5px;">Enter verification code</button>
+        </form>
+
+
+    </div>
+
+    <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-white portfolio-navbar gradient" style="color: rgb(118,35,35);padding: 18.2px 0px;background: linear-gradient(47deg, rgb(240,255,234), rgb(240,255,234) 99%);">
+            <div class="container">
+                <strong><img src="assets/img/testlogo.png" style="cursor:context-menu;width: 120px;height: 70px;margin-top: -20px;margin-bottom: -13px"></strong>
+                <div class="collapse navbar-collapse" id="navbarNav" style="text-align: right;">
+                <ul class="nav navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link active link link-four pulse-grow-on-hover" href="http://127.0.0.1:8000/" style="color: #070606;background-color: #f5fff1;padding: 0px;">Home</a></li>
+                    <li class="nav-item" style="color: #070606;"><a class="nav-link active link link-four pulse-grow-on-hover" href="login" style="color: #070606;background-color: #f5fff1;padding: 0px;">Log in</a></li>
+                    <li class="nav-item"><a class="nav-link active link link-four pulse-grow-on-hover" href="registration" style="color: #070606;background-color: #f5fff1;padding: 0px;">Register</a></li>
+                    <li class="nav-item"><a class="nav-link active link link-four pulse-grow-on-hover" href="updateinfo" style="color: #070606;background-color: #f5fff1;padding: 0px;">Dashboard</a></li>
+                    <li class="nav-item" style="color: #070606;"><a class="nav-link active link link-four pulse-grow-on-hover" href="contactus" style="color: #070606;background-color: #f5fff1;padding: 0px;">Contact us</a></li>
+                    <li class="nav-item" style="cursor:pointer;padding-right: 0px;"><a class="nav-link active link link-four pulse-grow-on-hover" onclick="logout()" style="color: #070606;background-color: #f5fff1;padding: 0px;">Log out</a></li>
+                </ul>
+        </div>
+            </div>
+        </nav>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="" method="post">
+        {%  csrf_token %}
+        <div class="form-group">
+            <label for="exampleInputPassword1">Enter Verification Code:</label>
+            <input type="password" name="otpin" class="form-control" id="exampleInputPassword1" placeholder="OTP" pattern="\d*" title="Input can be only numbers" maxlength="4" minlength="4" required>
+         </div>
+            <button type="submit" name="btn3" class="btn btn-primary" style="margin-top: 5px; width:100%; background: #58a25b;border-radius: 5px;">Submit</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.1/pikaday.min.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+          <script>
+            AOS.init(
+                {
+                    offset: 200, // offset (in px) from the original trigger point
+                    once: true,
+                    mirror:true,
+                    duration: 1500, // values from 0 to 3000, with step 50ms
+                }
+            );
+          </script>
+
+</body>
+<script>
+        function disableid()
+        {
+            var text="1";
+            window.location.href="{% url 'bkash_payment' %}"+ "?disable=" + text;
+        }
+
+</script>
+<script>
+    setTimeout(function(){
+        document.getElementById('LOADING').style.visibility = "hidden";
+    }, 4000);
+    </script>
+    <script>
+function logout() {
+            window.location.href = "{% url 'login' %}" +"?logged_out="+"1";
+          }
+
+</script>
+
+</html>
