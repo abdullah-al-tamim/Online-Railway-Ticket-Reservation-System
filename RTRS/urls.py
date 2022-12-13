@@ -19,4 +19,6 @@ from rtrsApp import views as mainViews
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', mainViews.homepage, name='home_page'),
+    path('login', mainViews.login, name='login'),
+    # path('trains', mainViews.list_trains, name='train'),
 ]

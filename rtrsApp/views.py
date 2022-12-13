@@ -5,3 +5,5 @@ from django.shortcuts import render, redirect, HttpResponse
 
 def homepage(request):
     return render(request, 'search.html', None)
+def login(request):
+    return render(request, 'login.html', None)
