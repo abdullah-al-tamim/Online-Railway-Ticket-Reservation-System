@@ -56,13 +56,13 @@
 
   <body style="font-family: Lato, sans-serif">
     <div
-      class="login-dark"
+      class="login-dark container-fluid"
       style="
         background: url('assets/img/train6.jpg');
         color: #d9ebfb;
         padding: 10px;
         width: 100%;
-        height: 800px;
+        height: 120vh;
       "
     >
       {% if request.GET.not_logged_in == '0' %}
@@ -361,29 +361,40 @@
       </form>
     </div>
     <nav
-      class="navbar navbar-dark navbar-expand-lg fixed-top bg-white portfolio-navbar gradient"
+      class="navbar navbar-dark navbar-expand-lg fixed-top"
       style="
-        color: rgb(118, 35, 35);
-        padding: 18.2px 0px;
-        background: linear-gradient(
-          47deg,
-          rgb(240, 255, 234),
-          rgb(240, 255, 234) 99%
-        );
+        color: rgb(255, 0, 0);
+        padding: 15px 0px;
+        background: linear-gradient(47deg, rgb(200, 0, 0), rgb(50, 205, 50));
       "
     >
       <div class="container">
+        <div class="header-logo-img">
+          <img
+            src="assets/img/testlogo.png"
+            width="60"
+            alt="Bangladesh Railway Logo"
+          />
+        </div>
+        <strong
+          ><div class="header-logo-text text-dark">
+            Online Ticket <br />Reservation System
+          </div></strong
+        >
+
+        {% comment %}
         <strong
           ><img
             src="assets/img/testlogo.png"
             style="
               cursor: context-menu;
-              width: 120px;
-              height: 70px;
+              width: 50px;
+              height: 50px;
               margin-top: -20px;
               margin-bottom: -13px;
             "
         /></strong>
+        {% endcomment %}
         <div
           class="collapse navbar-collapse"
           id="navbarNav"
@@ -392,7 +403,7 @@
           <ul class="nav navbar-nav ml-auto">
             <li class="nav-item">
               <a
-                class="nav-link active link link-four pulse-grow-on-hover"
+                class="nav-link active link link-four pulse-grow-on-hover bg-transparent"
                 href="http://127.0.0.1:8000/"
                 style="color: #070606; background-color: #f5fff1; padding: 0px"
                 >Home</a
@@ -400,7 +411,7 @@
             </li>
             <li class="nav-item" style="color: #070606">
               <a
-                class="nav-link active link link-four pulse-grow-on-hover"
+                class="nav-link active link link-four pulse-grow-on-hover bg-transparent"
                 href="login"
                 style="color: #070606; background-color: #f5fff1; padding: 0px"
                 >Log in</a
@@ -408,15 +419,15 @@
             </li>
             <li class="nav-item">
               <a
-                class="nav-link active link link-four pulse-grow-on-hover"
+                class="nav-link active link link-four pulse-grow-on-hover bg-transparent"
                 href="registration"
-                style="color: #070606; background-color: #f5fff1; padding: 0px"
+                style="color: #070606; background-color: ; padding: 0px"
                 >Register</a
               >
             </li>
             <li class="nav-item">
               <a
-                class="nav-link active link link-four pulse-grow-on-hover"
+                class="nav-link active link link-four pulse-grow-on-hover bg-transparent"
                 href="updateinfo"
                 style="color: #070606; background-color: #f5fff1; padding: 0px"
                 >Dashboard</a
@@ -424,7 +435,7 @@
             </li>
             <li class="nav-item" style="color: #070606">
               <a
-                class="nav-link active link link-four pulse-grow-on-hover"
+                class="nav-link active link link-four pulse-grow-on-hover bg-transparent"
                 href="contactus"
                 style="color: #070606; background-color: #f5fff1; padding: 0px"
                 >Contact us</a
@@ -432,7 +443,7 @@
             </li>
             <li class="nav-item" style="cursor: pointer; padding-right: 0px">
               <a
-                class="nav-link active link link-four pulse-grow-on-hover"
+                class="nav-link active link link-four pulse-grow-on-hover bg-transparent"
                 onclick="logout()"
                 style="color: #070606; background-color: #f5fff1; padding: 0px"
                 >Log out</a
@@ -444,7 +455,7 @@
     </nav>
     <div
       class="features-clean"
-      data-aos="flip-left"
+      data-aos="fade-up"
       style="color: #313437; background-color: #fff; padding-bottom: 30px"
     >
       <div class="container">
@@ -538,10 +549,8 @@
       crossorigin="anonymous"
     ></script>
 
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    
   </body>
 
   <script>
