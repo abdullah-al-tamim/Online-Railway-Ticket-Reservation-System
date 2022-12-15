@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>ইস্টিশন</title>
+    <title>Contact Us | RTRS</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,700">
     <link rel="stylesheet" href="assets/css/Features-Boxed.css">
@@ -15,21 +15,99 @@
 
 <body style="font-family: Lato, sans-serif;">
 
- <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-white portfolio-navbar gradient" style="color: rgb(118,35,35);padding: 18.2px 0px;background: linear-gradient(47deg, rgb(240,255,234), rgb(240,255,234) 99%);">
-            <div class="container">
-                <strong><img src="assets/img/testlogo.png" style="cursor:context-menu;width: 120px;height: 70px;margin-top: -20px;margin-bottom: -13px"></strong>
-                <div class="collapse navbar-collapse" id="navbarNav" style="text-align: right;">
-                <ul class="nav navbar-nav ml-auto">
-                    <li class="nav-item"><a class="nav-link active link link-four pulse-grow-on-hover" href="http://127.0.0.1:8000/" style="color: #070606;background-color: #f5fff1;padding: 0px;">Home</a></li>
-                    <li class="nav-item" style="color: #070606;"><a class="nav-link active link link-four pulse-grow-on-hover" href="login" style="color: #070606;background-color: #f5fff1;padding: 0px;">Log in</a></li>
-                    <li class="nav-item"><a class="nav-link active link link-four pulse-grow-on-hover" href="registration" style="color: #070606;background-color: #f5fff1;padding: 0px;">Register</a></li>
-                    <li class="nav-item"><a class="nav-link active link link-four pulse-grow-on-hover" href="updateinfo" style="color: #070606;background-color: #f5fff1;padding: 0px;">Dashboard</a></li>
-                    <li class="nav-item" style="color: #070606;"><a class="nav-link active link link-four pulse-grow-on-hover" href="contactus" style="color: #070606;background-color: #f5fff1;padding: 0px;">Contact us</a></li>
-                    <li class="nav-item" style="cursor:pointer;padding-right: 0px;"><a class="nav-link active link link-four pulse-grow-on-hover" onclick="logout()" style="color: #070606;background-color: #f5fff1;padding: 0px;">Log out</a></li>
-                </ul>
+  <nav
+      class="navbar navbar-dark navbar-expand-lg fixed-top"
+      style="
+        color: rgb(255, 0, 0);
+        padding: 15px 0px;
+        background: linear-gradient(47deg, rgb(200, 0, 0), rgb(50, 205, 50));
+      "
+    >
+      <div class="container">
+        <div class="header-logo-img">
+          <img
+            src="assets/img/testlogo.png"
+            width="60"
+            alt="Bangladesh Railway Logo"
+          />
         </div>
-            </div>
-        </nav>
+        <strong
+          ><div class="header-logo-text text-dark">
+            Online Ticket <br />Reservation System
+          </div></strong
+        >
+
+        {% comment %}
+        <strong
+          ><img
+            src="assets/img/testlogo.png"
+            style="
+              cursor: context-menu;
+              width: 50px;
+              height: 50px;
+              margin-top: -20px;
+              margin-bottom: -13px;
+            "
+        /></strong>
+        {% endcomment %}
+        <div
+          class="collapse navbar-collapse"
+          id="navbarNav"
+          style="text-align: right"
+        >
+          <ul class="nav navbar-nav ml-auto">
+            <li class="nav-item">
+              <a
+                class="nav-link active link link-four pulse-grow-on-hover bg-transparent"
+                href="http://127.0.0.1:8000/"
+                style="color: #070606; background-color: #f5fff1; padding: 0px"
+                >Home</a
+              >
+            </li>
+            <li class="nav-item" style="color: #070606">
+              <a
+                class="nav-link active link link-four pulse-grow-on-hover bg-transparent"
+                href="login"
+                style="color: #070606; background-color: #f5fff1; padding: 0px"
+                >Log in</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link active link link-four pulse-grow-on-hover bg-transparent"
+                href="registration"
+                style="color: #070606; background-color: ; padding: 0px"
+                >Register</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link active link link-four pulse-grow-on-hover bg-transparent"
+                href="updateinfo"
+                style="color: #070606; background-color: #f5fff1; padding: 0px"
+                >Dashboard</a
+              >
+            </li>
+            <li class="nav-item" style="color: #070606">
+              <a
+                class="nav-link active link link-four pulse-grow-on-hover bg-transparent"
+                href="contactus"
+                style="color: #070606; background-color: #f5fff1; padding: 0px"
+                >Contact us</a
+              >
+            </li>
+            <li class="nav-item" style="cursor: pointer; padding-right: 0px">
+              <a
+                class="nav-link active link link-four pulse-grow-on-hover bg-transparent"
+                onclick="logout()"
+                style="color: #070606; background-color: #f5fff1; padding: 0px"
+                >Log out</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
     <div class="container" style="padding-top: 120px;border-width: 0px;border-style: none;border-right-width: 1px;border-left-width: 1px;">
         <div class="row" style="border-width: 0px;border-style: solid;border-right-width: 1px;border-left-width: 1px;margin-bottom: 40px;">
             <div class="col">

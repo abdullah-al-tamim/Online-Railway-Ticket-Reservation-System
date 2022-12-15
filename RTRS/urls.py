@@ -20,5 +20,28 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', mainViews.homepage, name='home_page'),
     path('login', mainViews.login, name='login'),
+    
+    
+    # path('trains', mainViews.list_trains, name= 'train'),
+    path('registration',mainViews.registration,name= 'register'),
+    # path('seat_selection',mainViews.seatselection,name= 'seat_selection'),
+    # path('updateinfo',mainViews.updateinfo,name= 'updateinfo'),
+    # path('changepass',mainViews.changepass,name= 'changepass'),
+    # path('changemail',mainViews.changemail,name= 'changemail'),
+    # path('changenum',mainViews.changenum,name= 'changenum'),
+    # path('prev',mainViews.prev,name= 'prev'),
+    # path('upcoming',mainViews.upcoming,name= 'upcoming'),
+    path('contactus',mainViews.contactus,name= 'contactus'),
+    # path('successful',mainViews.successful,name= 'successful'),
+    # path('payment_selection',mainViews.payment_selection,name= 'payment_selection'),
+    # path('bkash_payment',mainViews.bkash,name= 'bkash_payment'),
+    # path('card_payment',mainViews.card,name= 'card_payment'),
+    # path('nexus_payment',mainViews.nexus,name= 'nexus_payment'),
+    # path('rocket_payment',mainViews.rocket,name= 'rocket_payment'),
+    # path('Ticket',mainViews.pdf,name='ticket'),
+    # path('forget_pass',mainViews.forgetpass,name='forget_pass'),
+    # path('forget_pass_change',mainViews.forgetchangepass,name='forget_pass_change'),
+    # path('demo',mainViews.demo,name='demo'),
+
     # path('trains', mainViews.list_trains, name='train'),
 ]
