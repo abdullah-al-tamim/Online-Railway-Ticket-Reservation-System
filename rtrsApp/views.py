@@ -3,15 +3,104 @@ from django.db import connection
 import hashlib
 
 # Create your views here.
+
+
 def make_pw_hash(password):
     return hashlib.sha256(str.encode(password)).hexdigest()
+
+
+def check_pw_hash(password, hash):
+    if make_pw_hash(password) == hash:
+        return True
+    return False
+
 
 def homepage(request):
     return render(request, 'search.html', None)
 
 
 def login(request):
-    return render(request, 'login.html', None)
+    if request.method == "POST":
+        #global is_logged_in
+        # print(request.POST)
+        if request.session.get('is_logged_in') == "1":
+            print('already logged in')
+            return redirect("/" + "?logged_in=" + str(1))
+        mail = request.POST["email"]
+        ps = request.POST["password"]
+
+        cursor = connection.cursor()
+        sql = "SELECT PASSWORD FROM R_USER WHERE EMAIL_ADD=%s;"
+        cursor.execute(sql, [mail])
+        result = cursor.fetchall()
+        cursor.close()
+        print(result)
+
+        if(result):
+
+            for r in result:
+                hash = r[0]
+            if(check_pw_hash(ps, hash)):
+
+                is_logged_in = 1
+                request.session['usermail'] = mail
+                request.session['is_logged_in'] = "1"
+                #user = authenticate(request, username=username, password=password)
+
+                cursor1 = connection.cursor()
+                sql1 = "SELECT INITCAP(FIRST_NAME),INITCAP(LAST_NAME),DOB,GENDER,NID_NO,HOUSE_NO,ROAD_NO,ZIP_CODE,CITY,CONTACT_NO,USER_ID,PASSWORD,SUBSTR(CONTACT_NO,5) " \
+                       "FROM R_USER " \
+                       "WHERE EMAIL_ADD=%s;"
+                cursor1.execute(sql1, [mail])
+                result1 = cursor1.fetchall()
+                cursor1.close()
+
+                fullname = ""
+                for r in result1:
+                    # fullname=r[0]
+                    request.session['first'] = r[0]
+                    request.session['last'] = r[1]
+                    request.session['dob'] = str(r[2])
+                    request.session['gender'] = r[3]
+                    request.session['nid'] = r[4]
+                    request.session['house'] = r[5]
+                    request.session['road'] = r[6]
+                    request.session['zip'] = r[7]
+                    request.session['city'] = r[8]
+                    request.session['contact'] = r[9]
+                    request.session['user_id'] = r[10]
+                    request.session['password'] = r[11]
+                    request.session['pnr'] = r[12]
+                fullname = request.session.get(
+                    'first') + ' ' + request.session.get("last")
+                request.session['fullname'] = fullname
+                return redirect("/"+"?user="+fullname)
+            else:
+                print(make_pw_hash(ps))
+                response = "Login Denied. Wrong Password."
+                return render(request, "login.html", {"statusred": response})
+        else:
+            response = "Login Denied. Invalid E-mail."
+            return render(request, "login.html", {"statusred": response})
+
+    else:
+        if (request.GET.get('logged_out')):
+            fl = 0
+            if(request.session.get('is_logged_in') != "1"):
+                fl = 0
+                # if (request.GET.logged_out == '1'):s
+                response = "You are not logged in yet. Please log in first."
+            else:
+                fl = 1
+                is_logged_in = 0
+                request.session.flush()
+                response = "You have successfully logged out."
+            if fl:
+                return render(request, 'login.html', {"statusgreen": response})
+            else:
+                return render(request, 'login.html', {"statusred": response})
+        else:
+            return render(request, 'login.html')
 
 
 def registration(request):
@@ -84,7 +173,7 @@ def registration(request):
                     cursor.close()
                     fullname = first+" "+last
                     return redirect("/login" + "?user=" + fullname)
-                    #return render(request, 'login.html')
+                    # return render(request, 'login.html')
     return render(request, 'registration.html')
 
 
