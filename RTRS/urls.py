@@ -39,8 +39,8 @@ urlpatterns = [
     # path('nexus_payment',mainViews.nexus,name= 'nexus_payment'),
     # path('rocket_payment',mainViews.rocket,name= 'rocket_payment'),
     # path('Ticket',mainViews.pdf,name='ticket'),
-    # path('forget_pass',mainViews.forgetpass,name='forget_pass'),
-    # path('forget_pass_change',mainViews.forgetchangepass,name='forget_pass_change'),
+    path('forget_pass',mainViews.forgetpass,name='forget_pass'),
+    path('forget_pass_change',mainViews.forgetchangepass,name='forget_pass_change'),
     # path('demo',mainViews.demo,name='demo'),
 
     # path('trains', mainViews.list_trains, name='train'),
