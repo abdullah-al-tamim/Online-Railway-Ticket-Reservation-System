@@ -77,7 +77,7 @@ class Station(models.Model):
 class Train_Timetable(models.Model):
     train = models.ForeignKey(Train, on_delete=models.CASCADE)
     station = models.ForeignKey(Station, on_delete=models.CASCADE)
-    departure_time = models.DateTimeField()
+    departure_time = models.CharField(max_length=20)
     direction = models.CharField(max_length=20,default = 'FROM')
     class Meta:
         unique_together = (("train", "station"),)

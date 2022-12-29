@@ -77,10 +77,14 @@ def list_trains(request):
             sdate = str(re0[0])
         if date == sdate:
             cursor = connection.cursor()
+            # ROW_NUMBER() assigns a unique number to each row to which it is applied (either each row in the partition or each row returned by the query), in the ordered sequence of rows specified in the order_by_clause , beginning with 1
+            # SN stands for Serial Number
             sql = "SELECT TT1.TRAIN_ID,(SELECT NAME FROM TRAIN T1 WHERE T1.TRAIN_ID=TT1.TRAIN_ID) NAME1,TT1.DEPARTURE_TIME,TT2.DEPARTURE_TIME,ROW_NUMBER() Over (ORDER BY TO_TIMESTAMP(LPAD(TT1.DEPARTURE_TIME,4,'0'), 'HH24:MI')) As SN " \
                   "FROM TRAIN_TIMETABLE TT1,TRAIN_TIMETABLE TT2 " \
                   "WHERE (TT1.DIRECTION='FROM' AND TT1.STATION_ID=(SELECT STATION_ID FROM STATION WHERE NAME=%s)) AND (TT2.DIRECTION='TO' AND TT2.STATION_ID=(SELECT STATION_ID FROM STATION WHERE NAME=%s)) AND (TT1.TRAIN_ID=TT2.TRAIN_ID) AND TO_DATE(CONCAT(CONCAT(CONCAT(TO_CHAR(SYSDATE, 'YYYY-MM-DD'),' '),TT1.DEPARTURE_TIME),':00'),'YYYY-MM-DD HH24:MI:SS')>SYSDATE " \
                   "ORDER BY TO_TIMESTAMP(LPAD(TT1.DEPARTURE_TIME,4,'0'), 'HH24:MI');"
+            # LPAD('tech', 8, 0) output: '0000tech'
+            # 2022-12-29 10:00:00 > SYSDATE
             cursor.execute(sql, [fro, to])
             result = cursor.fetchall()
             cursor.close()
@@ -95,6 +99,9 @@ def list_trains(request):
             cursor.close()
 
         cursor1 = connection.cursor()
+        # NVL is null value
+        # TRUNC truncates a string
+        # calculating total cost
         sql1 = "select NVL((TRUNC(COST*%s)+TRUNC(COST*%s*0.5)),0) " \
                "FROM COST " \
                "WHERE STATION_ID=(SELECT STATION_ID from STATION where NAME=%s) AND TO_STATION_ID=(SELECT STATION_ID from STATION where NAME=%s)"
@@ -114,13 +121,18 @@ def list_trains(request):
         st4 = ""
         st5 = ""
         st6 = ""
+        # re[0] = '-'-----
+        # re = ------
+        # re = ------
         for re2 in result2:
-            st1 = int(re2[0])
-            st2 = int(re2[0]*decimal.Decimal('0.5'))
-            st3 = int(re2[0]*decimal.Decimal('0.8'))
-            st4 = int(re2[0]*decimal.Decimal('0.8')*decimal.Decimal('0.5'))
-            st5 = int(re2[0]*decimal.Decimal('0.6'))
-            st6 = int(re2[0]*decimal.Decimal('0.6')*decimal.Decimal('0.5'))
+            st1 = int(re2[0])  # snigdha adult cost
+            st2 = int(re2[0]*decimal.Decimal('0.5'))  # snigdha child cost
+            st3 = int(re2[0]*decimal.Decimal('0.8'))  # s_chair adult cost
+            st4 = int(re2[0]*decimal.Decimal('0.8') *
+                      decimal.Decimal('0.5'))  # s_chair child cost
+            st5 = int(re2[0]*decimal.Decimal('0.6'))  # shovon adult cost
+            st6 = int(re2[0]*decimal.Decimal('0.6') *
+                      decimal.Decimal('0.5'))  # shovon child cost
         fare_list = []
         fare_list.append(str(st1))
         fare_list.append(str(st2))
@@ -130,7 +142,6 @@ def list_trains(request):
         fare_list.append(str(st6))
         st = ""
         for re in result1:
-
             if clas == 'SNIGDHA':
                 st = re[0]
             elif clas == 'S_CHAIR':
@@ -154,9 +165,11 @@ def list_trains(request):
             departure = r[2]
             arrival = r[3]
             sn = r[4]
+            # leftright , delay is for aos animation
             leftright = str(sn % 2)
             delay = (sn-1)*200
             cursor = connection.cursor()
+            # TRUNC(SYSDATE) removes the time element from the date
             sql = "SELECT 78-COUNT(*) FROM BOOKED_SEAT WHERE TRAIN_ID=%s AND SEAT_CLASS='SNIGDHA' AND TRUNC(DATE_OF_JOURNEY)= TO_DATE(%s,'YYYY-MM-DD');"
             cursor.execute(sql, [TRAIN_ID, doj])
             result = cursor.fetchall()
@@ -176,6 +189,9 @@ def list_trains(request):
             result2 = cursor2.fetchall()
             for r2 in result2:
                 shovan = r2[0]
+            # snigdhaad = snigdha adult
+            # snigdhach = snigdha child
+            # snigdhaseat = how many snigdha seats are available
             row = {'sn': sn, 'lr': leftright, 'delay': delay, 'TRAIN_ID': TRAIN_ID, 'NAME': NAME, 'DEPARTURE_TIME': departure, 'ARRIVAL_TIME': arrival, 'snigdhaad': fare_list[0],
                    'snigdhach': fare_list[1], 's_chairad': fare_list[2], 's_chairch': fare_list[3], 'shovanad': fare_list[4], 'shovanch': fare_list[5],
                    'snigdhaseat': snigdha, 's_chairseat': s_chair, 'shovanseat': shovan}
