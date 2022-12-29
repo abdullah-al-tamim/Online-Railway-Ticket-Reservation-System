@@ -56,13 +56,13 @@ class Reservation (models.Model):
         db_table = "Reservation"
 
 class booked_seat(models.Model):
-    train_id = models.ForeignKey(Train, on_delete=models.CASCADE)
+    train = models.ForeignKey(Train, on_delete=models.CASCADE)
     seat_no = models.IntegerField()
     reservation_id = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     date_of_journey = models.DateField()
     seat_class = models.CharField(max_length=50)
     class Meta:
-        unique_together = (("train_id", "seat_no", "reservation_id"))
+        unique_together = (("train", "seat_no", "reservation_id"))
         db_table = "booked_seat"
         
 
@@ -75,18 +75,18 @@ class Station(models.Model):
 
 
 class Train_Timetable(models.Model):
-    train_id = models.ForeignKey(Train, on_delete=models.CASCADE)
-    station_id = models.ForeignKey(Station, on_delete=models.CASCADE)
+    train = models.ForeignKey(Train, on_delete=models.CASCADE)
+    station = models.ForeignKey(Station, on_delete=models.CASCADE)
     departure_time = models.DateTimeField()
-
+    direction = models.CharField(max_length=20,default = 'FROM')
     class Meta:
-        unique_together = (("train_id", "station_id"),)
+        unique_together = (("train", "station"),)
         db_table = "Train_timetable"
 
 
 class Cost(models.Model):
-    station_id = models.ForeignKey(Station, on_delete=models.CASCADE)
-    to_station_id = models.ForeignKey(Station, on_delete=models.CASCADE, related_name='to_station_id')
+    station = models.ForeignKey(Station, on_delete=models.CASCADE)
+    to_station = models.ForeignKey(Station, on_delete=models.CASCADE, related_name='to_station_id')
     cost = models.IntegerField()
     class Meta:
         db_table = "cost"

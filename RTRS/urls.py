@@ -22,9 +22,9 @@ urlpatterns = [
     path('login', mainViews.login, name='login'),
     
     
-    # path('trains', mainViews.list_trains, name= 'train'),
+    path('trains', mainViews.list_trains, name= 'train'),
     path('registration',mainViews.registration,name= 'register'),
-    # path('seat_selection',mainViews.seatselection,name= 'seat_selection'),
+    path('seat_selection',mainViews.seatselection,name= 'seat_selection'),
     # path('updateinfo',mainViews.updateinfo,name= 'updateinfo'),
     # path('changepass',mainViews.changepass,name= 'changepass'),
     # path('changemail',mainViews.changemail,name= 'changemail'),
