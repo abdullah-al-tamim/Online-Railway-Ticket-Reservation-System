@@ -13,9 +13,9 @@ class R_user(models.Model):
     gender = models.CharField(max_length=10, blank=False, null=False)
     email_add = models.EmailField(max_length=100)
     nid_no = models.CharField(max_length=50, blank=False, null=False)
-    house_no = models.IntegerField()
-    road_no = models.IntegerField()
-    zip_code = models.IntegerField()
+    house_no = models.CharField(max_length=15)
+    road_no = models.CharField(max_length=15)
+    zip_code = models.CharField(max_length=15)
     city = models.CharField(max_length=50)
 
     class Meta:

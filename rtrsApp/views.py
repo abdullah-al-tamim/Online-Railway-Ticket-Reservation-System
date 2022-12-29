@@ -208,7 +208,90 @@ def list_trains(request):
 
 
 def seatselection(request):
-    return()
+    if(request.GET.get('id')):
+        id = request.GET.get('id')
+    else:
+        id = request.GET.get('not_equal')
+    request.session["train_id"] = id
+    fro = request.session.get('from')
+    cursor0 = connection.cursor()
+    sql0 = "SELECT (SELECT NAME FROM TRAIN T WHERE T.TRAIN_ID=TT.TRAIN_ID),TT.DEPARTURE_TIME,TO_CHAR(TO_DATE(TT.DEPARTURE_TIME,'HH24:MI')-(1/1440*15),'HH24:MI') " \
+           "FROM TRAIN_TIMETABLE TT " \
+           "WHERE TT.TRAIN_ID=TO_NUMBER(%s) AND STATION_ID=(SELECT STATION_ID FROM STATION WHERE NAME=%s);"
+    cursor0.execute(sql0, [id, fro])
+    result0 = cursor0.fetchall()
+    cursor0.close()
+    for r in result0:
+        request.session["train_name"] = r[0]
+        request.session["dep_time"] = r[1]
+        request.session["last_time"] = r[2]
+    t = request.session.get('dep_time')+':00'
+    # txt = "banana"
+    # txt.rjust(20,'x')
+    # >>>"xxxxxxxxxxxxxxbanana"
+    t = (t.rjust(8, '0'))
+    print(request.session.get('doj')+' '+t)
+    # date + time = dtoj
+    request.session["dtoj"] = request.session.get('doj')+' '+t
+    clas = request.session.get('class')
+    adult = request.session.get('adult')
+    child = request.session.get('child')
+    date = request.session.get('doj')
+    fro = request.session.get('from')
+    to = request.session.get('to')
+    house = request.session.get('house')
+    road = request.session.get('road')
+    zip = request.session.get('zip')
+    city = request.session.get('city')
+    doj = request.session.get('doj')
+    if (house):
+        if (road):
+            if (zip):
+                address = "House no: " + \
+                    str(house) + ", Road no: " + str(road) + \
+                    ", " + city + "-" + str(zip)
+            else:
+                address = "House no: " + \
+                    str(house) + ", Road no: " + str(road) + ", " + city
+        else:
+            if (zip):
+                address = "House no: " + \
+                    str(house) + ", " + city + "-" + str(zip)
+            else:
+                address = "House no: " + str(house) + ", " + city
+    else:
+        if (road):
+            if (zip):
+                address = "Road no: " + \
+                    str(road) + ", " + city + "-" + str(zip)
+
+            else:
+                address = "Road no: " + str(road) + ", " + city
+
+        else:
+            if (zip):
+                address = city + "-" + str(zip)
+
+            else:
+                address = city
+    cursor = connection.cursor()
+    #trunc sudhu date k alada kore datetime theke
+    sql = "SELECT SEAT_NO FROM BOOKED_SEAT WHERE TRAIN_ID=%s AND SEAT_CLASS=%s AND TRUNC(DATE_OF_JOURNEY)= TO_DATE(%s,'YYYY-MM-DD');"
+    cursor.execute(sql, [id, clas, doj])
+    result = cursor.fetchall()
+    cursor.close()
+    booked_seats = []
+    for r in result:
+        seat_no = r[0]
+        booked_seats.append(seat_no)
+
+    print(booked_seats)
+    return render(request, 'seat_selection.html', {'booked_seats': booked_seats, 'from': fro, 'to': to, 'date': date, 'class': clas, 'adult': adult, 'child': child, 'train_name': request.session.get('train_name'), 'cost': request.session.get('cost'),
+                                                   'mail': request.session.get('usermail'), 'mobile': request.session.get('contact'), 'full': request.session.get('first')+' '+request.session.get('last'), 'address': address})
+
+
+def payment_selection(request):
+    return
 
 
 def forgetpass(request):
