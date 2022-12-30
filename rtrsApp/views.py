@@ -3,7 +3,7 @@ import os
 import sys
 import twilio
 import random
-
+from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
 from twilio.rest import Client
 from django.contrib.auth import authenticate
@@ -29,8 +29,8 @@ from random import randint
 from xhtml2pdf import pisa
 
 # Create your views here.
-
-
+# account_sid = 'ACb362c2986bb8893509067b2afc07aa01'
+# auth_token = '2c001562f7837648fd12247a6684c873'
 def make_pw_hash(password):
     return hashlib.sha256(str.encode(password)).hexdigest()
 
@@ -39,6 +39,184 @@ def check_pw_hash(password, hash):
     if make_pw_hash(password) == hash:
         return True
     return False
+
+
+def card(request):
+    return
+
+
+def nexus(request):
+    return
+
+def rocket(request):
+    return
+
+def pdf(request):
+    return
+
+def successful(request):
+    first = request.session.get('first')
+    # first = first.capitalize()
+    last = request.session.get('last')
+    # last = last.capitalize()
+    full = first+' '+last
+    mail = request.session.get('usermail')
+    #print(mail)
+    template = render_to_string('email.html', {"name": full})
+    email = EmailMessage(
+        'Confirmation of e-ticket booking',
+        template,
+        settings.EMAIL_HOST_USER,
+        [mail],
+    )
+    # fail_silently = False will raise an error if email is not sent
+    email.fail_silently = False
+    # email.send()
+    train_id = request.session.get('train_id')
+    cursor = connection.cursor()
+    sql = "SELECT NAME FROM TRAIN WHERE TRAIN_ID=%s;"
+    cursor.execute(sql, [train_id])
+    result = cursor.fetchall()
+    cursor.close()
+    name = ""
+    for r in result:
+        name = r[0]
+
+    return render(request, 'successful.html', {"name": name, "train_id": train_id, "total_seats": request.session.get('total_seats'),
+                                               "amount": request.session.get('cost'), "from": request.session.get('from'), "to": request.session.get('to'), "class": request.session.get('class')})
+
+def bkash(request):
+    amount = request.session.get('cost')
+    if request.method == "POST" and 'btn1' in request.POST:
+        name = request.POST["name"]
+        # name represents phone number
+        request.session["paymentname"] = name
+        ps = request.POST["password"]
+        request.session["paymentpass"] = ps
+        request.session["paymentflag"] = "done"
+        otp = random.randint(1000, 9999)
+        request.session["otp"] = str(otp)
+        print("otp= "+str(otp))
+        account_sid = 'ACb362c2986bb8893509067b2afc07aa01'
+        auth_token = '2c001562f7837648fd12247a6684c873'
+        client = Client(account_sid, auth_token)
+        try:
+            message = client.messages \
+                .create(
+                    body='Your OTP is '+str(otp),
+                    from_='+13854628374',
+                    to='+88'+name
+                )
+
+            print(message.sid)
+        except TwilioRestException as e:
+            msg = "Could Not Send SMS.Try Again Later!"
+            return render(request, 'bkash_payment.html', {"status": msg, 'amount': amount})
+
+    if request.method == "POST" and 'btn3' in request.POST:
+        flag = request.session.get('paymentflag')
+        if flag == "":
+            msg = "Click 'Send Verification Code' first to get an OTP."
+            return render(request, 'bkash_payment.html', {"status": msg, 'amount': amount})
+        vcode = request.POST["otpin"]
+        name = request.session.get('paymentname')
+        ps = request.session.get('paymentpass')
+        otp = request.session.get('otp')
+        if vcode == str(otp):
+            cursor = connection.cursor()
+            sql = "INSERT INTO PAYMENT VALUES(NVL((SELECT (MAX(PAYMENT_ID)+1) FROM PAYMENT),1),%s,SYSDATE);"
+            cursor.execute(sql, [amount])
+            cursor.close()
+
+            doj = request.session.get('doj')
+            doj = str(doj)
+            dtoj = request.session.get('dtoj')
+            dtoj = str(dtoj)
+            print(dtoj)
+            tot = request.session.get('total_seats')
+            adult = request.session.get('adult')
+            child = request.session.get('child')
+            cls = request.session.get('class')
+            fro = request.session.get('from')
+            to = request.session.get('to')
+            tr = request.session.get('train_id')
+            id = request.session.get('user_id')
+            cursor2 = connection.cursor()
+            print("\n\n\n\n\nID: ",id,"\n\n\n\n")
+            sql2 = "INSERT INTO RESERVATION VALUES(NVL((SELECT (MAX(RESERVATION_ID)+1) FROM RESERVATION),1),SYSDATE,TO_DATE(%s,'YYYY-MM-DD hh24:mi:ss'),TO_NUMBER(%s),TO_NUMBER(%s),%s,%s,%s,TO_NUMBER(%s));"
+            cursor2.execute(sql2, [dtoj, adult, child, cls, fro, to, id])
+            cursor2.close()
+            cursor1 = connection.cursor()
+            #print("payment e dhukse")
+            sql1 = "INSERT INTO MOBILE_BANKING VALUES(TO_NUMBER(%s),TO_NUMBER(%s),TO_NUMBER(%s), NVL((SELECT MAX(PAYMENT_ID) FROM PAYMENT),1));"
+            cursor1.execute(sql1, [name, vcode, ps])
+            cursor1.close()
+            seat_nos = request.session.get('seat_nos')
+            seat_list = seat_nos.split()
+            cursor3 = connection.cursor()
+            for s in seat_list:
+                seat = str(s)
+                sql3 = "INSERT INTO BOOKED_SEAT VALUES(TO_NUMBER(%s),TO_DATE(%s,'YYYY-MM-DD hh24:mi:ss'),%s,NVL((SELECT (MAX(RESERVATION_ID)) FROM RESERVATION),1), TO_NUMBER(%s));"
+                cursor3.execute(sql3, [seat, dtoj, cls, tr ])
+            cursor3.close()
+
+            cursor4 = connection.cursor()
+            sql4 = "SELECT TO_CHAR(SYSDATE,'DD-MM-YYYY'),TO_CHAR(SYSDATE,'HH24:MI') FROM DUAL;"
+            cursor4.execute(sql4)
+            result4 = cursor4.fetchall()
+            cursor4.close()
+
+            for r in result4:
+                idate = r[0]
+                itime = r[1]
+            request.session["idate"] = idate
+            request.session["itime"] = itime
+
+            return redirect("/successful")
+        if vcode != "" and vcode != str(otp):
+            print("otp milena")
+            msg = "Wrong OTP Entered."
+            return render(request, 'bkash_payment.html', {"status": msg, 'amount': amount})
+
+    return render(request, 'bkash_payment.html', {'amount': amount})
+
+
+
+def payment_selection(request):
+    # getting the seat numbers from frontend
+    seat_nos = request.GET.get('seat_nos')
+
+    total_seats = request.session.get('total_seats')
+    amount = request.session.get('cost')
+    request.session["paymentflag"] = ""
+    if(seat_nos[0] == 'a'):
+        print("\t Auto Seat Selection")
+        clas = request.session.get('class')
+        train_id = request.session.get('train_id')
+        doj = request.session.get('doj')
+        cursor = connection.cursor()
+        out = ""
+        total_seats = int(total_seats)
+        result = cursor.callproc(
+            'SEATNOS', [total_seats, train_id, clas, doj, out])
+        print(result[4])
+        request.session["seat_nos"] = result[4]
+        return render(request, 'payment selection.html', {'amount': amount})
+    else:
+        print("\t Manual Seat Selection")
+        print(total_seats)
+        # removing 'b' part came or 0th index from front end in seat_nos string
+        seat_nos = seat_nos[1:]
+        print(seat_nos)
+        id = request.session.get('train_id')
+        request.session["seat_nos"] = seat_nos
+        seat_list = seat_nos.split()
+        print(seat_list)
+        if(int(total_seats) != len(seat_list)):
+            return redirect("/seat_selection" + "?not_equal=" + id)
+
+        # print(seat_list)
+        return render(request, 'payment selection.html', {'amount': amount})
 
 
 def list_trains(request):
@@ -275,7 +453,7 @@ def seatselection(request):
             else:
                 address = city
     cursor = connection.cursor()
-    #trunc sudhu date k alada kore datetime theke
+    # trunc sudhu date k alada kore datetime theke
     sql = "SELECT SEAT_NO FROM BOOKED_SEAT WHERE TRAIN_ID=%s AND SEAT_CLASS=%s AND TRUNC(DATE_OF_JOURNEY)= TO_DATE(%s,'YYYY-MM-DD');"
     cursor.execute(sql, [id, clas, doj])
     result = cursor.fetchall()
@@ -288,10 +466,6 @@ def seatselection(request):
     print(booked_seats)
     return render(request, 'seat_selection.html', {'booked_seats': booked_seats, 'from': fro, 'to': to, 'date': date, 'class': clas, 'adult': adult, 'child': child, 'train_name': request.session.get('train_name'), 'cost': request.session.get('cost'),
                                                    'mail': request.session.get('usermail'), 'mobile': request.session.get('contact'), 'full': request.session.get('first')+' '+request.session.get('last'), 'address': address})
-
-
-def payment_selection(request):
-    return
 
 
 def forgetpass(request):
@@ -311,15 +485,15 @@ def forgetpass(request):
             otp = random.randint(1000, 9999)
             request.session["fg_otp"] = str(otp)
             print("otp= " + str(otp))
-            account_sid = 'AC12508562ed95fd8227bfb94ee4c762ae'
-            auth_token = 'c9561d046f2c9b741746d46e4e424705'
+            account_sid = 'ACb362c2986bb8893509067b2afc07aa01'
+            auth_token = '2c001562f7837648fd12247a6684c873'
             client = Client(account_sid, auth_token)
 
             try:
                 message = client.messages \
                     .create(
-                        body='Your OTP is ' + str(otp),
-                        from_='+12543235243',
+                        body='Your OTP for RTRS is ' + str(otp)+' \nRegards\nTeam RTRS',
+                        from_='+13854628374',
                         to='+880' + contact
                     )
 

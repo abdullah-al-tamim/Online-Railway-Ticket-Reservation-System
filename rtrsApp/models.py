@@ -49,8 +49,8 @@ class Reservation (models.Model):
     seat_class = models.CharField(max_length=10, blank=False, null=False)
     from_station = models.CharField(max_length=30, blank=False, null=False)
     to_station = models.CharField(max_length=30, blank=False, null=False)
-    user_id = models.ForeignKey(R_user, on_delete=models.CASCADE,)
-    payment_id = models.ForeignKey(Payment, on_delete=models.CASCADE)
+    user = models.ForeignKey(R_user, on_delete=models.CASCADE,)
+    # payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "Reservation"
@@ -58,7 +58,7 @@ class Reservation (models.Model):
 class booked_seat(models.Model):
     train = models.ForeignKey(Train, on_delete=models.CASCADE)
     seat_no = models.IntegerField()
-    reservation_id = models.ForeignKey(Reservation, on_delete=models.CASCADE)
+    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     date_of_journey = models.DateField()
     seat_class = models.CharField(max_length=50)
     class Meta:
@@ -93,7 +93,7 @@ class Cost(models.Model):
 
 
 class Mobile_Banking(models.Model):
-    payment_id = models.ForeignKey(Payment, on_delete=models.CASCADE)
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
     account_no = models.CharField(max_length=50)
     verification_code = models.IntegerField()
     pin = models.IntegerField()
