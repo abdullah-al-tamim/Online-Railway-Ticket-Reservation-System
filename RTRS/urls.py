@@ -41,7 +41,5 @@ urlpatterns = [
     path('Ticket',mainViews.pdf,name='ticket'),
     path('forget_pass',mainViews.forgetpass,name='forget_pass'),
     path('forget_pass_change',mainViews.forgetchangepass,name='forget_pass_change'),
-    # path('demo',mainViews.demo,name='demo'),
 
-    # path('trains', mainViews.list_trains, name='train'),
 ]

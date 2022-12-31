@@ -28,9 +28,7 @@ from random import randint
 
 from xhtml2pdf import pisa
 
-# Create your views here.
-# account_sid = 'ACb362c2986bb8893509067b2afc07aa01'
-# auth_token = '2c001562f7837648fd12247a6684c873'
+
 def make_pw_hash(password):
     return hashlib.sha256(str.encode(password)).hexdigest()
 
@@ -42,17 +40,276 @@ def check_pw_hash(password, hash):
 
 
 def card(request):
-    return
+    amount = request.session.get('cost')
+    if request.method == "POST":
+
+        cardnumber = request.POST["cardnumber"]
+        name = request.POST["name"]
+        cvv = request.POST["cvv"]
+        date = request.POST["date"]
+        # cursor5 = connection.cursor()
+        # # flag = cursor5.callfunc('CHECKEXP', int, [date])
+        # cursor5.close()
+        # print(flag)
+        # if flag == 1:
+        #     return redirect("/card_payment" + "?date=" + str(1))
+        # cursor=connection.cursor()
+        # sql="INSERT INTO PAYMENT VALUES(NVL((SELECT MAX(PAYMENT_ID)+1 FROM PAYMENT),1),%s,SYSDATE);"
+        # cursor.execute(sql,[amount])
+        # cursor.close()
+
+        doj = request.session.get('doj')
+        doj = str(doj)
+        dtoj = request.session.get('dtoj')
+        dtoj = str(dtoj)
+        print(dtoj)
+        tot = request.session.get('total_seats')
+        adult = request.session.get('adult')
+        child = request.session.get('child')
+        cls = request.session.get('class')
+        fro = request.session.get('from')
+        to = request.session.get('to')
+        tr = request.session.get('train_id')
+        id = request.session.get('user_id')
+        cursor2 = connection.cursor()
+        sql2 = "INSERT INTO RESERVATION VALUES(NVL((SELECT (MAX(RESERVATION_ID)+1) FROM RESERVATION),1),SYSDATE,TO_DATE(%s,'YYYY-MM-DD hh24:mi:ss'),TO_NUMBER(%s),TO_NUMBER(%s),%s,%s,%s,TO_NUMBER(%s));"
+        cursor2.execute(sql2, [dtoj, adult, child, cls, fro, to, id])
+        cursor2.close()
+        cursor1 = connection.cursor()
+        sql1 = "INSERT INTO CARD VALUES(UPPER(%s),%s,TO_DATE(%s,'YYYY-MM-DD'),%s,NVL((SELECT MAX(PAYMENT_ID) FROM PAYMENT),1));"
+        cursor1.execute(sql1, [name, cardnumber, date, cvv])
+        cursor1.close()
+        seat_nos = request.session.get('seat_nos')
+        seat_list = seat_nos.split()
+        cursor3 = connection.cursor()
+        for s in seat_list:
+            seat = str(s)
+            sql3 = "INSERT INTO BOOKED_SEAT VALUES(TO_NUMBER(%s),TO_DATE(%s,'YYYY-MM-DD hh24:mi:ss'),%s,NVL((SELECT (MAX(RESERVATION_ID)) FROM RESERVATION),1), TO_NUMBER(%s));"
+            cursor3.execute(sql3, [seat, dtoj, cls, tr])
+        cursor3.close()
+
+        cursor4 = connection.cursor()
+        sql4 = " SELECT TO_CHAR(SYSDATE,'DD-MM-YYYY'),TO_CHAR(SYSDATE,'HH24:MI') FROM DUAL;"
+        cursor4.execute(sql4)
+        result4 = cursor4.fetchall()
+        cursor4.close()
+
+        for r in result4:
+            idate = r[0]
+            itime = r[1]
+        request.session["idate"] = idate
+        request.session["itime"] = itime
+
+        return redirect("/successful")
+        # print(request.POST);
+
+    return render(request, 'card_payment.html', {'amount': amount})
 
 
 def nexus(request):
-    return
+    amount = request.session.get('cost')
+    if request.method == "POST":
 
-def rocket(request):
-    return
+        cardnumber = request.POST["cardnumber"]
+        name = request.POST["name"]
+        pin = request.POST["pin"]
+        # cursor = connection.cursor()
+        # sql = "INSERT INTO PAYMENT VALUES(NVL((SELECT MAX(PAYMENT_ID)+1 FROM PAYMENT),1),%s,SYSDATE);"
+        # cursor.execute(sql, [amount])
+        # cursor.close()
+
+        doj = request.session.get('doj')
+        doj = str(doj)
+        dtoj = request.session.get('dtoj')
+        dtoj = str(dtoj)
+        print(dtoj)
+        tot = request.session.get('total_seats')
+        cls = request.session.get('class')
+        fro = request.session.get('from')
+        to = request.session.get('to')
+        adult = request.session.get('adult')
+        child = request.session.get('child')
+        tr = request.session.get('train_id')
+        id = request.session.get('user_id')
+        cursor2 = connection.cursor()
+        sql2 = "INSERT INTO RESERVATION VALUES(NVL((SELECT (MAX(RESERVATION_ID)+1) FROM RESERVATION),1),SYSDATE,TO_DATE(%s,'YYYY-MM-DD hh24:mi:ss'),TO_NUMBER(%s),TO_NUMBER(%s),%s,%s,%s,TO_NUMBER(%s));"
+        cursor2.execute(sql2, [dtoj, adult, child, cls, fro, to, id])
+        cursor2.close()
+        cursor1 = connection.cursor()
+        sql1 = "INSERT INTO NEXUSPAY VALUES(UPPER(%s),%s,%s,NVL((SELECT MAX(PAYMENT_ID) FROM PAYMENT),1));"
+        cursor1.execute(sql1, [name, cardnumber, pin])
+        cursor1.close()
+        seat_nos = request.session.get('seat_nos')
+        seat_list = seat_nos.split()
+        cursor3 = connection.cursor()
+        for s in seat_list:
+            seat = str(s)
+            sql3 = "INSERT INTO BOOKED_SEAT VALUES(TO_NUMBER(%s),TO_DATE(%s,'YYYY-MM-DD hh24:mi:ss'),%s,NVL((SELECT (MAX(RESERVATION_ID)) FROM RESERVATION),1), TO_NUMBER(%s));"
+            cursor3.execute(sql3, [seat, dtoj, cls, tr])
+        cursor3.close()
+
+        cursor4 = connection.cursor()
+        sql4 = " SELECT TO_CHAR(SYSDATE,'DD-MM-YYYY'),TO_CHAR(SYSDATE,'HH24:MI') FROM DUAL;"
+        cursor4.execute(sql4)
+        result4 = cursor4.fetchall()
+        cursor4.close()
+
+        for r in result4:
+            idate = r[0]
+            itime = r[1]
+        request.session["idate"] = idate
+        request.session["itime"] = itime
+
+        return redirect("/successful")
+    return render(request, 'nexus_payment.html', {'amount': amount})
+
 
 def pdf(request):
-    return
+   #all_student = Students.objects.all()
+    first = request.session.get('first').lower()
+    first = first.capitalize()
+    last = request.session.get('last').lower()
+    last = last.capitalize()
+    fullname = first+' '+last
+    # idate and itime are reservation date and time
+    idate = request.session.get('idate')
+    itime = request.session.get('itime')
+    issue = idate+' '+itime
+    doj = request.session.get('doj')
+    doj = str(doj)
+    # converting year month date to date month year
+    doj = datetime.datetime.strptime(doj, '%Y-%m-%d').strftime('%d-%m-%Y')
+    doj = str(doj)
+    dtime = request.session.get('dep_time')
+    journey = doj + ' '+dtime
+    trid = request.session.get('train_id')
+    trname = request.session.get('train_name')
+    train = '('+trid+') '+trname
+    fro = request.session.get('from')
+    fro = fro.capitalize()
+    to = request.session.get('to')
+    to = to.capitalize()
+    clas = request.session.get('class')
+    clas = clas.capitalize()
+    coach = 'Uma'
+    range = request.session.get('seat_nos')
+    tot = request.session.get('total_seats')
+    adult = request.session.get('adult')
+    child = request.session.get('child')
+    fare = 'BDT ' + str(request.session.get('cost'))
+    vat = 'BDT ' + str(request.session.get('vat'))
+    minusfare = 'BDT ' + \
+        str(int((int(request.session.get('cost'))-int(request.session.get('vat')))))
+    last_time = request.session.get('last_time')
+    collect = doj + ' '+last_time
+    pnr = request.session.get('pnr')
+    data = {'fullname': fullname, 'issue': issue, 'journey': journey, 'train': train, 'from': fro, 'to': to, 'class': clas, 'coach': coach,
+            'range': range, 'total': tot, 'adult': adult, 'child': child, 'fare': fare, 'vat': vat, 'minusfare': minusfare, 'collect': collect, 'pnr': pnr}
+    template = get_template("ticket.html")
+    data_p = template.render(data)
+    #pdf = render_to_pdf('ticket.html', data)
+    response = BytesIO()
+    pdfPage = pisa.pisaDocument(BytesIO(data_p.encode("UTF-8")), response)
+    if not pdfPage.err:
+        return HttpResponse(response.getvalue(), content_type="application/pdf")
+    else:
+        return HttpResponse("Error Generating PDF")
+
+
+def rocket(request):
+    amount = request.session.get('cost')
+    if request.method == "POST" and 'btn1' in request.POST:
+        name = request.POST["name"]
+        request.session["paymentname"] = name
+        ps = request.POST["password"]
+        request.session["paymentpass"] = ps
+        request.session["paymentflag"] = "done"
+        otp = random.randint(1000, 9999)
+        request.session["otp"] = str(otp)
+        print("otp= "+str(otp))
+        account_sid = 'ACb362c2986bb8893509067b2afc07aa01'
+
+        client = Client(account_sid, auth_token)
+        try:
+            message = client.messages \
+                .create(
+                    body='Your OTP is '+str(otp),
+                    from_='+13854628374',
+                    to='+88'+name
+                )
+
+            print(message.sid)
+        except TwilioRestException as e:
+            msg = "Could Not Send SMS.Try Again Later!"
+            return render(request, 'rocket_payment.html', {"status": msg, 'amount': amount})
+
+    if request.method == "POST" and 'btn3' in request.POST:
+        flag = request.session.get('paymentflag')
+        if flag == "":
+            msg = "Click 'Send Verification Code' first to get an OTP."
+            return render(request, 'rocket_payment.html', {"status": msg, 'amount': amount})
+        vcode = request.POST["otpin"]
+        name = request.session.get('paymentname')
+        ps = request.session.get('paymentpass')
+        otp = request.session.get('otp')
+        if vcode == str(otp):
+            # cursor = connection.cursor()
+            # sql = "INSERT INTO PAYMENT VALUES(NVL((SELECT (MAX(PAYMENT_ID)+1) FROM PAYMENT),1),%s,SYSDATE);"
+            # cursor.execute(sql, [amount])
+            # cursor.close()
+
+            doj = request.session.get('doj')
+            doj = str(doj)
+            print(doj)
+            dtoj = request.session.get('dtoj')
+            dtoj = str(dtoj)
+            print(dtoj)
+            tot = request.session.get('total_seats')
+            adult = request.session.get('adult')
+            child = request.session.get('child')
+            cls = request.session.get('class')
+            fro = request.session.get('from')
+            to = request.session.get('to')
+            tr = request.session.get('train_id')
+            id = request.session.get('user_id')
+            cursor2 = connection.cursor()
+            sql2 = "INSERT INTO RESERVATION VALUES(NVL((SELECT (MAX(RESERVATION_ID)+1) FROM RESERVATION),1),SYSDATE,TO_DATE(%s,'YYYY-MM-DD hh24:mi:ss'),TO_NUMBER(%s),TO_NUMBER(%s),%s,%s,%s,TO_NUMBER(%s));"
+            cursor2.execute(sql2, [dtoj, adult, child, cls, fro, to, id])
+            cursor2.close()
+            cursor1 = connection.cursor()
+            # print("payment e dhukse")
+            sql1 = "INSERT INTO MOBILE_BANKING VALUES(TO_NUMBER(%s),TO_NUMBER(%s),TO_NUMBER(%s), NVL((SELECT MAX(PAYMENT_ID) FROM PAYMENT),1));"
+            cursor1.execute(sql1, [name, vcode, ps])
+            cursor1.close()
+            seat_nos = request.session.get('seat_nos')
+            seat_list = seat_nos.split()
+            cursor3 = connection.cursor()
+            for s in seat_list:
+                seat = str(s)
+                sql3 = "INSERT INTO BOOKED_SEAT VALUES(TO_NUMBER(%s),TO_DATE(%s,'YYYY-MM-DD hh24:mi:ss'),%s,NVL((SELECT (MAX(RESERVATION_ID)) FROM RESERVATION),1), TO_NUMBER(%s));"
+                cursor3.execute(sql3, [seat, dtoj, cls, tr])
+            cursor3.close()
+
+            cursor4 = connection.cursor()
+            sql4 = " SELECT TO_CHAR(SYSDATE,'DD-MM-YYYY'),TO_CHAR(SYSDATE,'HH24:MI') FROM DUAL;"
+            cursor4.execute(sql4)
+            result4 = cursor4.fetchall()
+            cursor4.close()
+
+            for r in result4:
+                idate = r[0]
+                itime = r[1]
+            request.session["idate"] = idate
+            request.session["itime"] = itime
+
+            return redirect("/successful")
+        if vcode != "" and vcode != str(otp):
+            print("otp milena")
+            msg = "Wrong OTP Entered."
+            return render(request, 'rocket_payment.html', {"status": msg, 'amount': amount})
+
+    return render(request, 'rocket_payment.html', {'amount': amount})
+
 
 def successful(request):
     first = request.session.get('first')
@@ -61,10 +318,10 @@ def successful(request):
     # last = last.capitalize()
     full = first+' '+last
     mail = request.session.get('usermail')
-    #print(mail)
+    # print(mail)
     template = render_to_string('email.html', {"name": full})
     email = EmailMessage(
-        'Confirmation of e-ticket booking',
+        'Confirmation of e-ticket booking in RTRS',
         template,
         settings.EMAIL_HOST_USER,
         [mail],
@@ -85,6 +342,7 @@ def successful(request):
     return render(request, 'successful.html', {"name": name, "train_id": train_id, "total_seats": request.session.get('total_seats'),
                                                "amount": request.session.get('cost'), "from": request.session.get('from'), "to": request.session.get('to'), "class": request.session.get('class')})
 
+
 def bkash(request):
     amount = request.session.get('cost')
     if request.method == "POST" and 'btn1' in request.POST:
@@ -98,12 +356,12 @@ def bkash(request):
         request.session["otp"] = str(otp)
         print("otp= "+str(otp))
         account_sid = 'ACb362c2986bb8893509067b2afc07aa01'
-        auth_token = '2c001562f7837648fd12247a6684c873'
+
         client = Client(account_sid, auth_token)
         try:
             message = client.messages \
                 .create(
-                    body='Your OTP is '+str(otp),
+                    body='Your OTP for Bkash payment is '+str(otp),
                     from_='+13854628374',
                     to='+88'+name
                 )
@@ -116,7 +374,7 @@ def bkash(request):
     if request.method == "POST" and 'btn3' in request.POST:
         flag = request.session.get('paymentflag')
         if flag == "":
-            msg = "Click 'Send Verification Code' first to get an OTP."
+            msg = "Click 'Send Verification Code' and get an OTP first."
             return render(request, 'bkash_payment.html', {"status": msg, 'amount': amount})
         vcode = request.POST["otpin"]
         name = request.session.get('paymentname')
@@ -142,7 +400,7 @@ def bkash(request):
             tr = request.session.get('train_id')
             id = request.session.get('user_id')
             cursor2 = connection.cursor()
-            print("\n\n\n\n\nID: ",id,"\n\n\n\n")
+            print("\n\n\n\n\nID: ", id, "\n\n\n\n")
             sql2 = "INSERT INTO RESERVATION VALUES(NVL((SELECT (MAX(RESERVATION_ID)+1) FROM RESERVATION),1),SYSDATE,TO_DATE(%s,'YYYY-MM-DD hh24:mi:ss'),TO_NUMBER(%s),TO_NUMBER(%s),%s,%s,%s,TO_NUMBER(%s));"
             cursor2.execute(sql2, [dtoj, adult, child, cls, fro, to, id])
             cursor2.close()
@@ -157,7 +415,7 @@ def bkash(request):
             for s in seat_list:
                 seat = str(s)
                 sql3 = "INSERT INTO BOOKED_SEAT VALUES(TO_NUMBER(%s),TO_DATE(%s,'YYYY-MM-DD hh24:mi:ss'),%s,NVL((SELECT (MAX(RESERVATION_ID)) FROM RESERVATION),1), TO_NUMBER(%s));"
-                cursor3.execute(sql3, [seat, dtoj, cls, tr ])
+                cursor3.execute(sql3, [seat, dtoj, cls, tr])
             cursor3.close()
 
             cursor4 = connection.cursor()
@@ -179,7 +437,6 @@ def bkash(request):
             return render(request, 'bkash_payment.html', {"status": msg, 'amount': amount})
 
     return render(request, 'bkash_payment.html', {'amount': amount})
-
 
 
 def payment_selection(request):
@@ -486,13 +743,14 @@ def forgetpass(request):
             request.session["fg_otp"] = str(otp)
             print("otp= " + str(otp))
             account_sid = 'ACb362c2986bb8893509067b2afc07aa01'
-            auth_token = '2c001562f7837648fd12247a6684c873'
+
             client = Client(account_sid, auth_token)
 
             try:
                 message = client.messages \
                     .create(
-                        body='Your OTP for RTRS is ' + str(otp)+' \nRegards\nTeam RTRS',
+                        body='Your OTP for RTRS is ' +
+                        str(otp)+' \nRegards\nTeam RTRS',
                         from_='+13854628374',
                         to='+880' + contact
                     )

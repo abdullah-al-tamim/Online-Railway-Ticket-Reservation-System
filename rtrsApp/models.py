@@ -113,7 +113,7 @@ class Card(models.Model):
         db_table = "Card"
 
 class Nexuspay(models.Model):
-    payment_id = models.ForeignKey(Payment, on_delete=models.CASCADE)
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     card_no = models.CharField(max_length=50)
     pin = models.IntegerField()
