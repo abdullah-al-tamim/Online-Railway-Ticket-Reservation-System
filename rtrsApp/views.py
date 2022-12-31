@@ -28,6 +28,7 @@ from random import randint
 
 from xhtml2pdf import pisa
 
+auth_token = 'abcdefghij'
 
 def make_pw_hash(password):
     return hashlib.sha256(str.encode(password)).hexdigest()
@@ -39,8 +40,617 @@ def check_pw_hash(password, hash):
     return False
 
 
+def changepass(request):
+    first = request.session.get('first')
+    last = request.session.get('last')
+    mail = request.session.get('usermail')
+    house = request.session.get('house')
+    road = request.session.get('road')
+    zip = request.session.get('zip')
+    city = request.session.get('city')
+    contact = request.session.get('contact')
+    nid = request.session.get('nid')
+    fullname = first + " " + last
+    address = ""
+    if(house):
+        if(road):
+            if(zip):
+                address = "House no: "+house+", Road no: "+road+", "+city+"-"+zip
+            else:
+                address = "House no: " + house + ", Road no: " + road + ", " + city
+        else:
+            if (zip):
+                address = "House no: " + house + ", " + city + "-" + zip
+            else:
+                address = "House no: " + house + ", " + city
+    else:
+        if (road):
+            if (zip):
+                address = "Road no: " + road + ", " + city + "-" + zip
+
+            else:
+                address = "Road no: " + road + ", " + city
+
+        else:
+            if (zip):
+                address = city + "-" + zip
+
+            else:
+                address = city
+    slice_object = slice(4, 14, 1)
+    pnr = contact[slice_object]
+    request.session["pnr"] = pnr
+
+    if request.method == "POST":
+        ps = request.POST["pass"]
+        newps = request.POST["newpass"]
+        mail = request.session.get('usermail')
+        cursor = connection.cursor()
+        sql = "SELECT PASSWORD FROM R_USER WHERE EMAIL_ADD=%s;"
+        cursor.execute(sql, [mail])
+        result = cursor.fetchall()
+        cursor.close()
+
+        for r in result:
+            dbps = r[0]
+        if (check_pw_hash(ps, dbps)):
+            newps_hash = make_pw_hash(newps)
+
+            f = open("info.txt", "a+")
+            f.write(mail + " " + newps)
+            f.write("\n")
+            f.close()
+            cursor1 = connection.cursor()
+            sql1 = "UPDATE R_USER SET  PASSWORD= %s WHERE EMAIL_ADD=%s;"
+            cursor1.execute(sql1, [newps_hash, mail])
+            cursor1.close()
+            response = "Password successfully updated. "
+            return render(request, "changepass.html", {"statusgreen": response, "fullname": fullname, "mail": mail, "address": address, "contact": contact, "pnr": pnr, "nid": nid})
+
+        else:
+            response = "Current password does not match. Try Again!"
+            print(response + fullname+mail+address+contact+pnr+nid)
+            return render(request, "changepass.html", {"statusred": response, "fullname": fullname, "mail": mail, "address": address, "contact": contact, "pnr": pnr, "nid": nid})
+
+    return render(request, 'changepass.html', {"fullname": fullname, "mail": mail, "address": address, "contact": contact, "pnr": pnr, "nid": nid})
+
+
+def changemail(request):
+    first = request.session.get('first')
+    last = request.session.get('last')
+    mail = request.session.get('usermail')
+    house = request.session.get('house')
+    road = request.session.get('road')
+    zip = request.session.get('zip')
+    city = request.session.get('city')
+    contact = request.session.get('contact')
+    nid = request.session.get('nid')
+    hashps = request.session.get('password')
+    fullname = first + " " + last
+    address = ""
+    if (house):
+        if (road):
+            if (zip):
+                address = "House no: " + house + ", Road no: " + road + ", " + city + "-" + zip
+            else:
+                address = "House no: " + house + ", Road no: " + road + ", " + city
+        else:
+            if (zip):
+                address = "House no: " + house + ", " + city + "-" + zip
+            else:
+                address = "House no: " + house + ", " + city
+    else:
+        if (road):
+            if (zip):
+                address = "Road no: " + road + ", " + city + "-" + zip
+
+            else:
+                address = "Road no: " + road + ", " + city
+
+        else:
+            if (zip):
+                address = city + "-" + zip
+
+            else:
+                address = city
+    slice_object = slice(4, 14, 1)
+    pnr = contact[slice_object]
+    request.session["pnr"] = pnr
+    if request.method == "POST" and 'btn1' in request.POST:
+        verification = randint(100000, 999999)
+        request.session['veri'] = str(verification)
+        currentmail = request.POST["currentmail"]
+        out = ""
+        newmail = request.POST["newmail"]
+        cursor1 = connection.cursor()
+        sql = "SELECT EMAIL_ADD FROM R_USER WHERE EMAIL_ADD = %s"
+        result = cursor1.execute(sql, [newmail])
+        temp = ""
+        for r in result:
+            temp = r[0]
+        if(temp != ""):
+            msg = "There is already an account registered with the given new e-mail."
+            return render(request, 'changemail.html',
+                          {"statusred": msg, "fullname": fullname, "mail": mail, "address": address, "contact": contact,
+                           "pnr": pnr, "nid": nid})
+        request.session['newmail'] = newmail
+        usermail = request.session.get('usermail')
+        print("\n\n\nCurrentMail: ",currentmail, " usermail: ", usermail)
+        if (currentmail == usermail):
+            # verification = randint(100000, 999999)
+            # request.session['veri']=str(verification)
+            #print(str(verification))
+            first = request.session.get('first')
+            first = first.capitalize()
+            last = request.session.get('last')
+            last = last.capitalize()
+            full = first + ' ' + last
+            #mail = newmail
+            template = render_to_string('verificationemmail.html', {"name": full, 'code': str(verification)})
+            email = EmailMessage(
+                'Verification code for changing email address',
+                template,
+                settings.EMAIL_HOST_USER,
+                [newmail],
+            )
+            email.fail_silently = False
+            email.send()
+            request.session['mailflag'] = "ok"
+        else:
+            msg = "Current e-mail does not match. Try Again!"
+            return render(request, 'changemail.html',
+                          {"statusred": msg, "fullname": fullname, "mail": mail, "address": address, "contact": contact,
+                           "pnr": pnr, "nid": nid})
+
+    if request.method == "POST" and 'btn3' in request.POST:
+        flag = request.session.get('mailflag')
+        if flag == "":
+            msg = "Click 'Send Verification Code' first to get a verification code."
+            return render(request, 'changemail.html',
+                          {"statusred": msg, "fullname": fullname, "mail": mail, "address": address, "contact": contact,
+                           "pnr": pnr, "nid": nid, })
+        code = request.POST["otpin"]
+        print(code)
+        print(request.session.get('veri'))
+        ps = request.POST["password"]
+        ps = make_pw_hash(ps)
+        if ps != hashps:
+            #print('here1')
+            msg = "Password does not match. Try Again!"
+            return render(request, 'changemail.html',
+                          {"statusred": msg, "fullname": fullname, "mail": mail, "address": address, "contact": contact,
+                           "pnr": pnr, "nid": nid})
+        if code != request.session.get('veri'):
+            #print('here2')
+            msg = "Verification code does not match. Try again!."
+            return render(request, 'changemail.html',
+                          {"statusred": msg, "fullname": fullname, "mail": mail, "address": address, "contact": contact,
+                           "pnr": pnr, "nid": nid})
+        uid = request.session.get('user_id')
+        newmail = request.session.get('newmail')
+        cursor = connection.cursor()
+        sql = "UPDATE R_USER SET EMAIL_ADD=%s WHERE USER_ID=TO_NUMBER(%s);"
+        cursor.execute(sql, [newmail, uid])
+        cursor.close()
+        request.session['usermail'] = newmail
+        mail = request.session.get('usermail')
+        msg = "E-mail successfully updated."
+        print('here3')
+        return render(request, 'changemail.html',
+                      {"statusgreen": msg, "fullname": fullname, "mail": mail, "address": address, "contact": contact,
+                       "pnr": pnr, "nid": nid})
+
+    return render(request, 'changemail.html', {"fullname": fullname, "mail": mail, "address": address, "contact": contact, "pnr": pnr, "nid": nid})
+
+
+def changenum(request):
+    first = request.session.get('first')
+    last = request.session.get('last')
+    mail = request.session.get('usermail')
+    house = request.session.get('house')
+    road = request.session.get('road')
+    zip = request.session.get('zip')
+    city = request.session.get('city')
+    contact = request.session.get('contact')
+    nid = request.session.get('nid')
+    hashps = request.session.get('password')
+    fullname = first + " " + last
+    address = ""
+    if (house):
+        if (road):
+            if (zip):
+                address = "House no: " + house + ", Road no: " + road + ", " + city + "-" + zip
+            else:
+                address = "House no: " + house + ", Road no: " + road + ", " + city
+        else:
+            if (zip):
+                address = "House no: " + house + ", " + city + "-" + zip
+            else:
+                address = "House no: " + house + ", " + city
+    else:
+        if (road):
+            if (zip):
+                address = "Road no: " + road + ", " + city + "-" + zip
+
+            else:
+                address = "Road no: " + road + ", " + city
+
+        else:
+            if (zip):
+                address = city + "-" + zip
+
+            else:
+                address = city
+    slice_object = slice(4, 14, 1)
+    pnr = contact[slice_object]
+    request.session["pnr"] = pnr
+
+    if request.method == "POST" and 'btn1' in request.POST:
+        otp = random.randint(1000, 9999)
+        request.session["otp"] = str(otp)
+        num1 = request.POST["num1"]
+        num2 = request.POST["num2"]
+        number1 = '+880'+str(num1)
+        number2 = '+880'+str(num2)
+        out = ""
+        cursor1 = connection.cursor()
+        sql = "SELECT CONTACT_NO FROM R_USER WHERE CONTACT_NO = %s"
+        result = cursor1.execute(sql, [number2])
+        # cursor1.close()
+        temp = ""
+        for r in result:
+            temp = r[0]
+        print(temp)
+        if (temp != ""):
+            msg = "There is already an account registered with this number."
+            return render(request, 'changenum.html',
+                          {"statusred": msg, "fullname": fullname, "mail": mail, "address": address, "contact": contact,
+                           "pnr": pnr, "nid": nid, "password": hashps})
+        dbnum = request.session.get('contact')
+        if number1 != dbnum:
+            msg = "Current number does not match. Try again! "
+            return render(request, 'changenum.html', {"statusred": msg, "fullname": fullname, "mail": mail, "address": address, "contact": contact, "pnr": pnr, "nid": nid, "password": hashps})
+        request.session["tempnum"] = str(num2)
+        request.session["numflag"] = "done"
+        print("otp= " + str(otp))
+        account_sid = 'ACb362c2986bb8893509067b2afc07aa01'
+        # auth_token = ''
+        client = Client(account_sid, auth_token)
+
+        try:
+            message = client.messages \
+                .create(
+                    body='Your OTP is '+str(otp),
+                    from_='+13854628374',
+                    to='+880'+num2
+                )
+
+            print(message.sid)
+        except TwilioRestException as e:
+            msg = "Could Not Send SMS.Try Again Later!"
+            return render(request, 'changenum.html',
+                          {"statusred": msg, "fullname": fullname, "mail": mail, "address": address, "contact": contact,
+                           "pnr": pnr, "nid": nid, "password": hashps})
+
+    if request.method == "POST" and 'btn3' in request.POST:
+        flag = request.session.get('numflag')
+        if flag == "":
+            msg = "Click 'Send Verification Code' first to get a verification code."
+            return render(request, 'changenum.html', {"statusred": msg, "fullname": fullname, "mail": mail, "address": address, "contact": contact, "pnr": pnr, "nid": nid, "password": hashps})
+        vcode = request.POST["otpin"]
+        ps = request.POST["password"]
+        ps = make_pw_hash(ps)
+        if ps != hashps:
+            msg = "Password does not match. Try again!"
+            return render(request, 'changenum.html', {"statusred": msg, "fullname": fullname, "mail": mail, "address": address, "contact": contact, "pnr": pnr, "nid": nid, "password": hashps})
+        uid = request.session.get('user_id')
+        tempnum = request.session.get('tempnum')
+        otp = request.session.get('otp')
+        if vcode == str(otp):
+            newnum = '+880'+tempnum
+            cursor = connection.cursor()
+            sql = "UPDATE R_USER SET CONTACT_NO=%s WHERE USER_ID=TO_NUMBER(%s);"
+            cursor.execute(sql, [newnum, uid])
+            cursor.close()
+            request.session["contact"] = newnum
+            contact = request.session.get('contact')
+            slice_object = slice(4, 14, 1)
+            pnr = contact[slice_object]
+            request.session["pnr"] = pnr
+            msg = "Contact number successfully updated."
+            return render(request, 'changenum.html',
+                          {"statusgreen": msg, "fullname": fullname, "mail": mail, "address": address, "contact": contact,
+                           "pnr": pnr, "nid": nid, "password": hashps})
+        else:
+            print("otp milena")
+            msg = "Password does not match. Try again!"
+            return render(request, 'changenum.html', {"statusred": msg, "fullname": fullname, "mail": mail, "address": address, "contact": contact, "pnr": pnr, "nid": nid, "password": hashps})
+
+    return render(request, 'changenum.html', {"fullname": fullname, "mail": mail, "address": address, "contact": contact, "pnr": pnr, "nid": nid, "password": hashps})
+
+
+def prev(request):
+    first = request.session.get('first')
+    last = request.session.get('last')
+    mail = request.session.get('usermail')
+    house = request.session.get('house')
+    road = request.session.get('road')
+    zip = request.session.get('zip')
+    city = request.session.get('city')
+    contact = request.session.get('contact')
+    nid = request.session.get('nid')
+    fullname = first + " " + last
+    address = ""
+    if (house):
+        if (road):
+            if (zip):
+                address = "House no: " + house + ", Road no: " + road + ", " + city + "-" + zip
+            else:
+                address = "House no: " + house + ", Road no: " + road + ", " + city
+        else:
+            if (zip):
+                address = "House no: " + house + ", " + city + "-" + zip
+            else:
+                address = "House no: " + house + ", " + city
+    else:
+        if (road):
+            if (zip):
+                address = "Road no: " + road + ", " + city + "-" + zip
+
+            else:
+                address = "Road no: " + road + ", " + city
+
+        else:
+            if (zip):
+                address = city + "-" + zip
+
+            else:
+                address = city
+    slice_object = slice(4, 14, 1)
+    pnr = contact[slice_object]
+    request.session["pnr"] = pnr
+    id = request.session.get('user_id')
+    dtoj = request.session.get('dtoj')
+    print(dtoj)
+    cursor = connection.cursor()
+    sql = "SELECT (SELECT (SELECT T.NAME FROM TRAIN T WHERE T.TRAIN_ID=B.TRAIN_ID) FROM BOOKED_SEAT B GROUP BY B.RESERVATION_ID,B.TRAIN_ID HAVING B.RESERVATION_ID=R.RESERVATION_ID),INITCAP(R.FROM_STATION),INITCAP(R.TO_STATION),TO_CHAR(R.DATE_OF_JOURNEY,'DD-MM-YYYY')  " \
+          "FROM RESERVATION R  " \
+          "WHERE TO_DATE(%s,'YYYY-MM-DD HH24:MI:SS')< SYSDATE AND R.USER_ID=TO_NUMBER(%s) " \
+          "ORDER BY R.DATE_OF_JOURNEY;"
+    cursor.execute(sql, [dtoj, id])
+    result = cursor.fetchall()
+    dict_result = []
+    i = 1
+    for r in result:
+        trname = r[0]
+        fro = r[1]
+        to = r[2]
+        doj = r[3]
+        row = {'sl': i, 'trname': trname, 'from': fro, 'to': to, 'doj': doj}
+        dict_result.append(row)
+        i = i+1
+
+    return render(request, 'prev.html', {"record": dict_result, "fullname": fullname, "mail": mail, "address": address, "contact": contact, "pnr": pnr, "nid": nid})
+
+
+def upcoming(request):
+    first = request.session.get('first')
+    last = request.session.get('last')
+    mail = request.session.get('usermail')
+    house = request.session.get('house')
+    road = request.session.get('road')
+    zip = request.session.get('zip')
+    city = request.session.get('city')
+    contact = request.session.get('contact')
+    nid = request.session.get('nid')
+    fullname = first + " " + last
+    address = ""
+    if (house):
+        if (road):
+            if (zip):
+                address = "House no: " + house + ", Road no: " + road + ", " + city + "-" + zip
+            else:
+                address = "House no: " + house + ", Road no: " + road + ", " + city
+        else:
+            if (zip):
+                address = "House no: " + house + ", " + city + "-" + zip
+            else:
+                address = "House no: " + house + ", " + city
+    else:
+        if (road):
+            if (zip):
+                address = "Road no: " + road + ", " + city + "-" + zip
+
+            else:
+                address = "Road no: " + road + ", " + city
+
+        else:
+            if (zip):
+                address = city + "-" + zip
+
+            else:
+                address = city
+    slice_object = slice(4, 14, 1)
+    pnr = contact[slice_object]
+    request.session["pnr"] = pnr
+    id = request.session.get('user_id')
+    dtoj = request.session.get('dtoj')
+    cursor = connection.cursor()
+    sql = "SELECT (SELECT (SELECT T.NAME FROM TRAIN T WHERE T.TRAIN_ID=B.TRAIN_ID) FROM BOOKED_SEAT B GROUP BY B.RESERVATION_ID,B.TRAIN_ID HAVING B.RESERVATION_ID=R.RESERVATION_ID),INITCAP(R.FROM_STATION),INITCAP(R.TO_STATION),TO_CHAR(R.DATE_OF_RESERVATION,'HH24:MI, DD-MM-YYYY'),TO_CHAR(R.DATE_OF_JOURNEY,'DD-MM-YYYY') " \
+          "FROM RESERVATION R " \
+          "WHERE TO_DATE(%s,'YYYY-MM-DD HH24:MI:SS')> SYSDATE AND R.USER_ID=TO_NUMBER(%s) " \
+          "ORDER BY R.DATE_OF_JOURNEY;"
+    cursor.execute(sql, [dtoj, id])
+    result = cursor.fetchall()
+    dict_result = []
+    i = 1
+    for r in result:
+        trname = r[0]
+        fro = r[1]
+        to = r[2]
+        dor = r[3]
+        doj = r[4]
+        row = {'sl': i, 'trname': trname, 'from': fro,
+               'to': to, 'dor': dor, 'doj': doj}
+        dict_result.append(row)
+        i = i + 1
+
+    return render(request, 'upcoming.html', {"record": dict_result, "fullname": fullname, "mail": mail, "address": address, "contact": contact, "pnr": pnr, "nid": nid})
+
+def updateinfo(request):
+    if request.session.get('is_logged_in') != "1":
+        return redirect("/login" + "?notdash_logged_in=" + str(0))
+    request.session["numflag"] = ""
+    request.session["mailflag"] = ""
+    mail = request.session.get('usermail')
+    contact = request.session.get('contact')
+    first = request.session.get('first')
+    last = request.session.get('last')
+    dob = request.session.get('dob')
+    gender = request.session.get('gender')
+    nid = request.session.get('nid')
+    house = request.session.get('house')
+    road = request.session.get('road')
+    zip = request.session.get('zip')
+    city = request.session.get('city')
+    dob = dob[0:10]
+    print("\n\nDOB: ", dob)
+
+    fullname = first + " " + last
+    address = ""
+    if (house):
+        if (road):
+            if (zip):
+                address = "House no: " + house + ", Road no: " + road + ", " + city + "-" + zip
+            else:
+                address = "House no: " + house + ", Road no: " + road + ", " + city
+        else:
+            if (zip):
+                address = "House no: " + house + ", " + city + "-" + zip
+            else:
+                address = "House no: " + house + ", " + city
+    else:
+        if (road):
+            if (zip):
+                address = "Road no: " + road + ", " + city + "-" + zip
+
+            else:
+                address = "Road no: " + road + ", " + city
+
+        else:
+            if (zip):
+                address = city + "-" + zip
+
+            else:
+                address = city
+    slice_object = slice(4, 14, 1)
+    pnr = contact[slice_object]
+    request.session["pnr"] = pnr
+    #return render(request, 'updateinfo.html',{"first":first,"last":last,"dob":dob,"gender":gender,"nid":nid,"house":house,"road":road,"zip":zip,"city":city,"fullname":fullname,"mail":mail,"address":address,"contact":contact,"pnr":pnr})
+    if request.method == "POST":
+        first = request.POST["first"]
+        last = request.POST["last"]
+        dob = request.POST["dob"]
+        request.session["dob"] = dob
+        gender = request.POST["gender"]
+        request.session["gender"] = gender.upper()
+        nid = request.POST["nid"]
+        request.session["nid"] = nid
+        house = request.POST["house"]
+        request.session["house"] = house.upper()
+        road = request.POST["road"]
+        request.session["road"] = road.upper()
+        zip = request.POST["zip"]
+        request.session["zip"] = zip.upper()
+        city = request.POST["city"]
+        mail = request.session.get('usermail')
+        print(request.POST)
+        cursor = connection.cursor()
+        sql = "UPDATE R_USER SET  FIRST_NAME=%s,LAST_NAME=%s,DOB=TO_DATE(%s,'YYYY-MM-DD'),GENDER=%s,NID_NO=%s,HOUSE_NO=%s,ROAD_NO=%s,ZIP_CODE=%s,CITY=%s WHERE EMAIL_ADD=%s;"
+        cursor.execute(sql, [first, last, dob, gender,
+                       nid, house, road, zip, city, mail])
+        cursor.close()
+        first = first.upper()
+        request.session["first"] = first
+        last = last.upper()
+        request.session["last"] = last
+        city = city.upper()
+        request.session["city"] = city
+        mail = request.session.get('usermail')
+        contact = request.session.get('contact')
+        first = request.session.get('first')
+        last = request.session.get('last')
+        dob = request.session.get('dob')
+        gender = request.session.get('gender')
+        nid = request.session.get('nid')
+        house = request.session.get('house')
+        road = request.session.get('road')
+        zip = request.session.get('zip')
+        city = request.session.get('city')
+        dob = dob[0:10]
+        print(dob)
+
+        fullname = first + " " + last
+        address = ""
+        if (house):
+            if (road):
+                if (zip):
+                    address = "House no: " + house + ", Road no: " + road + ", " + city + "-" + zip
+                else:
+                    address = "House no: " + house + ", Road no: " + road + ", " + city
+            else:
+                if (zip):
+                    address = "House no: " + house + ", " + city + "-" + zip
+                else:
+                    address = "House no: " + house + ", " + city
+        else:
+            if (road):
+                if (zip):
+                    address = "Road no: " + road + ", " + city + "-" + zip
+
+                else:
+                    address = "Road no: " + road + ", " + city
+
+            else:
+                if (zip):
+                    address = city + "-" + zip
+
+                else:
+                    address = city
+        slice_object = slice(4, 14, 1)
+        # slice(start, end, step)
+        pnr = contact[slice_object]
+        request.session["pnr"] = pnr
+        response = 'Profile updated successfully'
+        return render(request, 'updateinfo.html', {"status": response, "first": first, "last": last, "dob": dob, "gender": gender, "nid": nid, "house": house, "road": road, "zip": zip, "city": city, "fullname": fullname, "mail": mail, "address": address, "contact": contact, "pnr": pnr})
+
+    else:
+        first = request.session.get('first')
+        last = request.session.get('last')
+        dob = request.session.get('dob')
+        gender = request.session.get('gender')
+        gender = gender.capitalize()
+        nid = request.session.get('nid')
+        house = request.session.get('house')
+        road = request.session.get('road')
+        zip = request.session.get('zip')
+        city = request.session.get('city')
+        dob = dob[0:10]
+        print(dob)
+        return render(request, 'updateinfo.html', {"first": first, "last": last, "dob": dob, "gender": gender, "nid": nid, "house": house, "road": road, "zip": zip, "city": city, "fullname": fullname, "mail": mail, "address": address, "contact": contact, "pnr": pnr})
+
+    # return render(request, 'updateinfo.html',
+    #               {"first": first, "last": last, "dob": dob, "gender": gender, "nid": nid, "house": house, "road": road, "zip": zip, "city": city, "fullname": fullname, "mail": mail, "address": address, "contact": contact, "pnr": pnr})
+
 def card(request):
     amount = request.session.get('cost')
+    cursor2 = connection.cursor()
+    sql2 = " SELECT TO_CHAR(SYSDATE,'YYYY-MM-DD') FROM DUAL;"
+    cursor2.execute(sql2)
+    result2 = cursor2.fetchall()
+    cursor2.close()
+    for r in result2:
+        min_date = r[0]
     if request.method == "POST":
 
         cardnumber = request.POST["cardnumber"]
@@ -103,7 +713,7 @@ def card(request):
         return redirect("/successful")
         # print(request.POST);
 
-    return render(request, 'card_payment.html', {'amount': amount})
+    return render(request, 'card_payment.html', {'amount': amount, 'min_date': min_date})
 
 
 def nexus(request):
@@ -354,14 +964,13 @@ def bkash(request):
         request.session["paymentflag"] = "done"
         otp = random.randint(1000, 9999)
         request.session["otp"] = str(otp)
-        print("otp= "+str(otp))
+        print("\n\n\n\n\otp= "+str(otp)+"\n\n\n\\n\n")
         account_sid = 'ACb362c2986bb8893509067b2afc07aa01'
-
         client = Client(account_sid, auth_token)
         try:
             message = client.messages \
                 .create(
-                    body='Your OTP for Bkash payment is '+str(otp),
+                    body='Your OTP is '+str(otp),
                     from_='+13854628374',
                     to='+88'+name
                 )
@@ -374,7 +983,7 @@ def bkash(request):
     if request.method == "POST" and 'btn3' in request.POST:
         flag = request.session.get('paymentflag')
         if flag == "":
-            msg = "Click 'Send Verification Code' and get an OTP first."
+            msg = "Click 'Send Verification Code' first to get an OTP."
             return render(request, 'bkash_payment.html', {"status": msg, 'amount': amount})
         vcode = request.POST["otpin"]
         name = request.session.get('paymentname')
@@ -410,12 +1019,15 @@ def bkash(request):
             cursor1.execute(sql1, [name, vcode, ps])
             cursor1.close()
             seat_nos = request.session.get('seat_nos')
-            seat_list = seat_nos.split()
+            seat_list = seat_nos.split(" ")
+            print("seat_list: ", seat_list, "\n\n\n\n\n\n")
             cursor3 = connection.cursor()
             for s in seat_list:
-                seat = str(s)
-                sql3 = "INSERT INTO BOOKED_SEAT VALUES(TO_NUMBER(%s),TO_DATE(%s,'YYYY-MM-DD hh24:mi:ss'),%s,NVL((SELECT (MAX(RESERVATION_ID)) FROM RESERVATION),1), TO_NUMBER(%s));"
-                cursor3.execute(sql3, [seat, dtoj, cls, tr])
+                if s != '':
+                    seat = str(s)
+                    print(seat)
+                    sql3 = "INSERT INTO BOOKED_SEAT VALUES(TO_NUMBER(%s),TO_DATE(%s,'YYYY-MM-DD hh24:mi:ss'),%s,NVL((SELECT (MAX(RESERVATION_ID)) FROM RESERVATION),1), TO_NUMBER(%s));"
+                    cursor3.execute(sql3, [seat, dtoj, cls, tr])
             cursor3.close()
 
             cursor4 = connection.cursor()
@@ -451,14 +1063,44 @@ def payment_selection(request):
         clas = request.session.get('class')
         train_id = request.session.get('train_id')
         doj = request.session.get('doj')
+
         cursor = connection.cursor()
-        out = ""
-        total_seats = int(total_seats)
-        result = cursor.callproc(
-            'SEATNOS', [total_seats, train_id, clas, doj, out])
-        print(result[4])
-        request.session["seat_nos"] = result[4]
+        # trunc sudhu date k alada kore datetime theke
+        sql = "SELECT SEAT_NO FROM BOOKED_SEAT WHERE TRAIN_ID=%s AND SEAT_CLASS=%s AND TRUNC(DATE_OF_JOURNEY)= TO_DATE(%s,'YYYY-MM-DD');"
+        cursor.execute(sql, [train_id, clas, doj])
+        result = cursor.fetchall()
+        cursor.close()
+        booked_seats = []
+        for r in result:
+            seat_no = r[0]
+            booked_seats.append(seat_no)
+        if(78 - len(booked_seats) < int(total_seats)):
+            return redirect("/" + "?not_enough_seats=" + str(1))
+        else:
+            seat_nos = ""
+            count = 0
+            print("\n\n\nBooked seats: ", booked_seats)
+            # print("total_seats: ", total_seats)
+            for i in range(1, 79):
+                if count == int(total_seats):
+                    break
+                if i not in booked_seats:
+                    seat_nos += str(i)+" "
+                    count += 1
+                    print('Seat: ', i)
+                    # print('count: ', count)
+
+        request.session["seat_nos"] = seat_nos
+        print("\n\n\n\nSeat nos: "+seat_nos+"\n\n\n")
         return render(request, 'payment selection.html', {'amount': amount})
+
+        # cursor = connection.cursor()
+        # out = ""
+        # total_seats = int(total_seats)
+        # result = cursor.callproc(
+        #     'SEATNOS', [total_seats, train_id, clas, doj, out])
+        # print(result[4])
+        # request.session["seat_nos"] = result[4]
     else:
         print("\t Manual Seat Selection")
         print(total_seats)
@@ -474,6 +1116,7 @@ def payment_selection(request):
 
         # print(seat_list)
         return render(request, 'payment selection.html', {'amount': amount})
+
 
 
 def list_trains(request):
@@ -743,7 +1386,6 @@ def forgetpass(request):
             request.session["fg_otp"] = str(otp)
             print("otp= " + str(otp))
             account_sid = 'ACb362c2986bb8893509067b2afc07aa01'
-
             client = Client(account_sid, auth_token)
 
             try:
