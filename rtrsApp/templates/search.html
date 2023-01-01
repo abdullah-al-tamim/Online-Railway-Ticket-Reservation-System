@@ -23,11 +23,47 @@
     <script>
     AOS.init();
     </script>
-
+    <style>
+      .list-icon-holder {
+            background: #006747;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            padding: 0;
+            text-align: center;
+            color: #FFF;
+            border-radius: 15px;
+            margin-right: 10px;
+            flex-basis: 32px;
+        }
+        li{
+          list-style: none;
+        }
+        .temp {
+          display: flex;
+        }
+        .list-item-text {
+            width: 100%;
+        }
+        img.instruction-image {
+                margin: 0 auto 30px;
+                display: block;
+            }
+  
+        .instruction-section row {
+            font-family: 'Arial';
+            font-style: normal;
+            font-weight: 700;
+            font-size: 27px;
+            line-height: 31px;
+            color: #023623;
+            margin: 0 0 20px;
+        }
+    </style>
 </head>
 
 <body style="font-family: Lato, sans-serif;">
-   <div class="text-center login-dark" style="background: url(&quot;assets/img/train6.jpg&quot;);background-position: center center; background-size: 100%; color: rgb(0,0,0);width: 100%;height: 800px;">
+   <div class="text-center login-dark" style="background: url(&quot;assets/img/train6.jpg&quot;);background-position: center center; background-size: 100%; color: rgb(0,0,0);width: 100%;height: 760px;">
         {% if request.GET.not_logged_in == '0' %}
         <label id="LOADING" data-aos="fade-down" data-aos-delay="0" data-aos-duration="300" style="margin-top: 100px;margin-left: 1059px;width: 450px;height: 35px;background: #cf2222;text-align: left;padding-left: 10px;padding-top:5px;color: white"><strong>Please log in first to search trains.</strong></label>
             {% endif %}
@@ -197,12 +233,23 @@
         <div class="container">
             <div class="intro"></div>
             <div class="row features">
+                <div class="col-sm-6 col-lg-4 item">
+                    <h3 class="name"><img src="assets\img\search.svg" alt="Step one of Bangladesh Railway purchase ticket">
+                </div>
+                <div class="col-sm-6 col-lg-4 item">
+                    <h3 class="name"><img src="assets\img\select.svg"  alt="Step two of Bangladesh Railway purchase ticket">
+                </div>
+                <div class="col-sm-6 col-lg-4 item">
+                    <h3 class="name"><img src="assets\img\pay.svg" alt="Step three of Bangladesh Railway purchase ticket">
+                </div>
+            </div>
+            <div class="row features">
                 <div class="col-sm-6 col-lg-4 item"><i class="fa fa-tags icon" style="color: #58a25b;"></i>
                     <h3 class="name"><strong>Get Train Tickets from the comfort of your home</strong><br></h3>
                     <p class="description" style="color: #7d8285;"><strong>Book train tickets from anywhere using the robust ticketing platform exclusively built to provide the passengers with pleasant ticketing experience.</strong><br></p>
                 </div>
                 <div class="col-sm-6 col-lg-4 item"><i class="fa fa-clock-o icon" style="color:#58a25b;"></i>
-                    <h3 class="name"><strong>Train &amp; Ticketing related information at your fingertips</strong><br></h3>
+                    <h3 class="name"><strong>Select your desired trip and choose your seats</strong><br></h3>
                     <p class="description" style="color: #7d8285;"><strong>Checkout available trains, seat availability, fare information on real time basis with this platform.</strong><br></p>
                 </div>
                 <div class="col-sm-6 col-lg-4 item"><i class="fa fa-lock icon" style="color: #58a25b;"></i>
@@ -212,6 +259,48 @@
             </div>
         </div>
     </div>
+     <div class="instruction-section row">
+                <div class="col-lg-5 col-md-4 col-sm-6 col-xs-12">
+                    <img src="assets\img\instruction-secion-image.png" alt="Instruction section image" class="instruction-image">
+                </div>
+                <div class="col-lg-7 col-md-8 col-sm-6 col-xs-12">
+                    <h3>Instructions to Purchase Tickets</h3>
+                    <ul class="instruction-list">
+                        <li class = "temp">
+                            <div class="list-icon-holder">
+                                <i class="fa fa-arrow-right"></i>
+                            </div>
+                            <div class="list-item-text">Tickets can be bought online five days in advance. <br> <br> </div>
+                        </li>
+                        <li class = "temp">
+                            <div class="list-icon-holder">
+                                <i class="fa fa-arrow-right"></i>
+                            </div>
+
+                                                        <div class="list-item-text">You can pay for the tickets using mobile financial services: bKash, Nagad, Rocket or debit/credit cards: Mastercard, Visa, DBBL Nexus. Other payment options will be available soon. <br> <br></div>
+                        </li>
+                        <li class = "temp">
+                            <div class="list-icon-holder">
+                                <i class="fa fa-arrow-right"></i>
+                            </div>
+                            <div class="list-item-text">In case of payment or transaction failure, the deducted amount would be refunded by your bank or MFS provider within 8 business days. <br> <br></div>
+                        </li>
+                        <li class = "temp">
+                            <div class="list-icon-holder">
+                                <i class="fa fa-arrow-right"></i>
+                            </div>
+                            <div class="list-item-text">In case money has been deducted from your card / mobile wallet but you have not received a ticket confirmation, the deducted amount would be refunded by your bank or MFS provider within 8 business days. <br> <br></div>
+                        </li>
+                        <li class = "temp">
+                            <div class="list-icon-holder">
+                                <i class="fa fa-arrow-right"></i>
+                            </div>
+                            <div class="list-item-text">If you have not received your ticket copy in email, kindly check your Spam / Junk folder. You can also download your ticket copy from the purchase history of your account after you login. <br> <br></div>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
          <main class="text-center page lanidng-page" style="text-align: center;padding: 22px 22px 22px;box-shadow: inset 0px 1px 10px 0px rgb(230,230,230);"><img src="assets/img/1.png"><img src="assets/img/2.png"><img src="assets/img/3.png"><img src="assets/img/4.png"><img src="assets/img/5.png"><img src="assets/img/6.png"></main>
 
 
