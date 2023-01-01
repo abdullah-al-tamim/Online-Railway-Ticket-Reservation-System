@@ -41,7 +41,7 @@ class Payment(models.Model):
 
 
 class Reservation (models.Model):
-    reservation_id = models.AutoField(primary_key=True)
+    reservation_id = models.IntegerField(primary_key=True)
     date_of_reservation = models.DateField()
     date_of_journey = models.DateTimeField()
     num_of_adults = models.IntegerField( blank=False, null=False)
@@ -62,7 +62,7 @@ class booked_seat(models.Model):
     date_of_journey = models.DateField()
     seat_class = models.CharField(max_length=50)
     class Meta:
-        unique_together = (("train", "seat_no", "reservation_id"))
+        unique_together = (("train", "seat_no", "reservation"))
         db_table = "booked_seat"
         
 
@@ -80,7 +80,7 @@ class Train_Timetable(models.Model):
     departure_time = models.CharField(max_length=20)
     direction = models.CharField(max_length=20,default = 'FROM')
     class Meta:
-        unique_together = (("train", "station"),)
+        unique_together = (("train", "station", "direction"),)
         db_table = "Train_timetable"
 
 

@@ -415,9 +415,9 @@ def prev(request):
     cursor = connection.cursor()
     sql = "SELECT (SELECT (SELECT T.NAME FROM TRAIN T WHERE T.TRAIN_ID=B.TRAIN_ID) FROM BOOKED_SEAT B GROUP BY B.RESERVATION_ID,B.TRAIN_ID HAVING B.RESERVATION_ID=R.RESERVATION_ID),INITCAP(R.FROM_STATION),INITCAP(R.TO_STATION),TO_CHAR(R.DATE_OF_JOURNEY,'DD-MM-YYYY')  " \
           "FROM RESERVATION R  " \
-          "WHERE TO_DATE(%s,'YYYY-MM-DD HH24:MI:SS')< SYSDATE AND R.USER_ID=TO_NUMBER(%s) " \
+          "WHERE DATE_OF_JOURNEY < SYSDATE AND R.USER_ID=TO_NUMBER(%s) " \
           "ORDER BY R.DATE_OF_JOURNEY;"
-    cursor.execute(sql, [dtoj, id])
+    cursor.execute(sql, [id])
     result = cursor.fetchall()
     dict_result = []
     i = 1
@@ -473,16 +473,35 @@ def upcoming(request):
     slice_object = slice(4, 14, 1)
     pnr = contact[slice_object]
     request.session["pnr"] = pnr
+    
+    
+    # cursor0 = connection.cursor()
+    # sql0 = "SELECT TT.DEPARTURE_TIME" \
+    #        "FROM TRAIN_TIMETABLE TT ;"
+    # cursor0.execute(sql0, [id, fro])
+    # result0 = cursor0.fetchall()
+    # cursor0.close()
+    # for r in result0:
+    #     request.session["dep_time"] = r[0]
+    # t = request.session.get('dep_time')+':00'
+    # # txt = "banana"
+    # # txt.rjust(20,'x')
+    # # >>>"xxxxxxxxxxxxxxbanana"
+    # t = (t.rjust(8, '0'))
+    # print(request.session.get('doj')+' '+t)
+    # # date + time = dtoj
+    # request.session["dtoj"] = request.session.get('doj')+' '+t
+    # dtoj = request.session.get('dtoj')
+    # print("\n\n\n\n", doj)
+    # print("\n\n\n\n", id)
+    
     id = request.session.get('user_id')
-    dtoj = request.session.get('dtoj')
-    print("\n\n\n\n", dtoj)
-    print("\n\n\n\n", id)
     cursor = connection.cursor()
     sql = "SELECT (SELECT (SELECT T.NAME FROM TRAIN T WHERE T.TRAIN_ID=B.TRAIN_ID) FROM BOOKED_SEAT B GROUP BY B.RESERVATION_ID,B.TRAIN_ID HAVING B.RESERVATION_ID=R.RESERVATION_ID),INITCAP(R.FROM_STATION),INITCAP(R.TO_STATION),TO_CHAR(R.DATE_OF_RESERVATION,'HH24:MI , DD-MM-YYYY'),TO_CHAR(R.DATE_OF_JOURNEY,'HH24:MI , DD-MM-YYYY') " \
           "FROM RESERVATION R " \
-          "WHERE TO_DATE(%s,'YYYY-MM-DD HH24:MI:SS')> SYSDATE AND R.USER_ID=TO_NUMBER(%s) " \
+          "WHERE DATE_OF_JOURNEY > SYSDATE AND R.USER_ID=TO_NUMBER(%s) " \
           "ORDER BY R.DATE_OF_JOURNEY;"
-    cursor.execute(sql, [dtoj, id])
+    cursor.execute(sql, [id])
     result = cursor.fetchall()
     dict_result = []
     i = 1
