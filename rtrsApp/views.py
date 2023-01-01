@@ -795,6 +795,76 @@ def nexus(request):
     return render(request, 'nexus_payment.html', {'amount': amount})
 
 
+# def render_to_pdf(template_src, context_dict={}):
+#     template = get_template(template_src)
+#     html  = template.render(context_dict)
+#     result = BytesIO()
+#     pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+#     if not pdf.err:
+#         return HttpResponse(result.getvalue(), content_type='application/pdf')
+#     return None
+
+# def pdfforemail(request):
+#    #all_student = Students.objects.all()
+#     first = request.session.get('first').lower()
+#     first = first.capitalize()
+#     last = request.session.get('last').lower()
+#     last = last.capitalize()
+#     fullname = first+' '+last
+#     # idate and itime are reservation date and time
+#     idate = request.session.get('idate')
+#     itime = request.session.get('itime')
+#     issue = idate+' '+itime
+#     doj = request.session.get('doj')
+#     doj = str(doj)
+#     # converting year month date to date month year
+#     doj = datetime.datetime.strptime(doj, '%Y-%m-%d').strftime('%d-%m-%Y')
+#     doj = str(doj)
+#     dtime = request.session.get('dep_time')
+#     journey = doj + ' '+dtime
+#     trid = request.session.get('train_id')
+#     trname = request.session.get('train_name')
+#     train = '('+trid+') '+trname
+#     fro = request.session.get('from')
+#     fro = fro.capitalize()
+#     to = request.session.get('to')
+#     to = to.capitalize()
+#     clas = request.session.get('class')
+#     clas = clas.capitalize()
+#     coach = 'Uma'
+#     range = request.session.get('seat_nos')
+#     tot = request.session.get('total_seats')
+#     adult = request.session.get('adult')
+#     child = request.session.get('child')
+#     fare = 'BDT ' + str(request.session.get('cost'))
+#     vat = 'BDT ' + str(request.session.get('vat'))
+#     minusfare = 'BDT ' + \
+#         str(int((int(request.session.get('cost'))-int(request.session.get('vat')))))
+#     last_time = request.session.get('last_time')
+#     collect = doj + ' '+last_time
+#     pnr = request.session.get('pnr')
+#     data = {'fullname': fullname, 'issue': issue, 'journey': journey, 'train': train, 'from': fro, 'to': to, 'class': clas, 'coach': coach,
+#             'range': range, 'total': tot, 'adult': adult, 'child': child, 'fare': fare, 'vat': vat, 'minusfare': minusfare, 'collect': collect, 'pnr': pnr}
+#     template = get_template("ticket.html")
+#     # data_p = template.render(data)
+#     pdf = render_to_pdf('ticket.html', data)
+#     if pdf:
+#       response = HttpResponse(pdf,content_type='application/pdf')
+#       filename = "rtrs_eticket%s.pdf" %(data['fullname'])
+#       content = "inline; filename='%s'" %(filename)
+#       response['Content-Disposition'] = content
+#       return response
+
+#     return HttpResponse("Not Found")
+    # response = BytesIO()
+    # pdfPage = pisa.pisaDocument(BytesIO(data_p.encode("UTF-8")), response)
+    # if not pdfPage.err:
+    #     return  content_type="application/pdf"
+    # else:
+    #     return HttpResponse("Error Generating PDF")
+
+
+
 def pdf(request):
    #all_student = Students.objects.all()
     first = request.session.get('first').lower()
@@ -943,13 +1013,62 @@ def rocket(request):
 
 
 def successful(request):
-    first = request.session.get('first')
-    # first = first.capitalize()
-    last = request.session.get('last')
-    # last = last.capitalize()
+    # first = request.session.get('first')
+    # # first = first.capitalize()
+    # last = request.session.get('last')
+    # # last = last.capitalize()
+    # full = first+' '+last
+    
+    first = request.session.get('first').lower()
+    first = first.capitalize()
+    last = request.session.get('last').lower()
+    last = last.capitalize()
     full = first+' '+last
+    # idate and itime are reservation date and time
+    idate = request.session.get('idate')
+    itime = request.session.get('itime')
+    issue = idate+' '+itime
+    doj = request.session.get('doj')
+    doj = str(doj)
+    # converting year month date to date month year
+    doj = datetime.datetime.strptime(doj, '%Y-%m-%d').strftime('%d-%m-%Y')
+    doj = str(doj)
+    dtime = request.session.get('dep_time')
+    journey = doj + ' '+dtime
+    trid = request.session.get('train_id')
+    trname = request.session.get('train_name')
+    train = '('+trid+') '+trname
+    fro = request.session.get('from')
+    fro = fro.capitalize()
+    to = request.session.get('to')
+    to = to.capitalize()
+    clas = request.session.get('class')
+    clas = clas.capitalize()
+    coach = 'Uma'
+    range = request.session.get('seat_nos')
+    tot = request.session.get('total_seats')
+    adult = request.session.get('adult')
+    child = request.session.get('child')
+    fare = 'BDT ' + str(request.session.get('cost'))
+    vat = 'BDT ' + str(request.session.get('vat'))
+    minusfare = 'BDT ' + \
+        str(int((int(request.session.get('cost'))-int(request.session.get('vat')))))
+    last_time = request.session.get('last_time')
+    collect = doj + ' '+last_time
+    pnr = request.session.get('pnr')
+    data = {'fullname': full, 'issue': issue, 'journey': journey, 'train': train, 'from': fro, 'to': to, 'class': clas, 'coach': coach,
+            'range': range, 'total': tot, 'adult': adult, 'child': child, 'fare': fare, 'vat': vat, 'minusfare': minusfare, 'collect': collect, 'pnr': pnr}
+    template = get_template("ticket.html")
+    data_p = template.render(data)
+    #pdf = render_to_pdf('ticket.html', data)
+    response = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(data_p.encode("UTF-8")), response)
+    pdf= response.getvalue()
+    filename = "rtrs_eticket"+journey +".pdf"
+    
     mail = request.session.get('usermail')
     # print(mail)
+    
     template = render_to_string('email.html', {"name": full})
     email = EmailMessage(
         'Confirmation of e-ticket booking in RTRS',
@@ -958,8 +1077,9 @@ def successful(request):
         [mail],
     )
     # fail_silently = False will raise an error if email is not sent
-    email.fail_silently = False
-    # email.send()
+    # email.fail_silently = False
+    email.attach(filename, pdf, 'application/pdf')
+    email.send()
     train_id = request.session.get('train_id')
     cursor = connection.cursor()
     sql = "SELECT NAME FROM TRAIN WHERE TRAIN_ID=%s;"

@@ -59,7 +59,7 @@ class booked_seat(models.Model):
     train = models.ForeignKey(Train, on_delete=models.CASCADE)
     seat_no = models.IntegerField()
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
-    date_of_journey = models.DateField()
+    date_of_journey = models.DateTimeField()
     seat_class = models.CharField(max_length=50)
     class Meta:
         unique_together = (("train", "seat_no", "reservation"))
