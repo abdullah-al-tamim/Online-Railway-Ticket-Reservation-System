@@ -11,13 +11,11 @@ from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-#from hashutils import make_pw_hash,check_pw_hash
 import hashlib
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.template.loader import render_to_string
 import datetime
-# from .models import Trains
 from django.db import connection
 from django.http import HttpResponse
 from django.views.generic import View
@@ -28,7 +26,7 @@ from random import randint
 
 from xhtml2pdf import pisa
 
-auth_token = 'abcdefghij'
+auth_token = ''
 
 def make_pw_hash(password):
     return hashlib.sha256(str.encode(password)).hexdigest()
@@ -1077,7 +1075,7 @@ def successful(request):
         [mail],
     )
     # fail_silently = False will raise an error if email is not sent
-    # email.fail_silently = False
+    email.fail_silently = False
     email.attach(filename, pdf, 'application/pdf')
     email.send()
     train_id = request.session.get('train_id')
