@@ -15,8 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.urls import include
 from rtrsApp import views as mainViews
+admin.site.site_header = "Railway Ticket Reservation System Administration"
+admin.site.site_title = ""
+admin.site.index_title = "Admin Panel | RTRS"
+
 urlpatterns = [
+    # path('jet/', include('jet.urls', 'jet')),
     path('admin/', admin.site.urls),
     path('', mainViews.homepage, name='home_page'),
     path('login', mainViews.login, name='login'),
